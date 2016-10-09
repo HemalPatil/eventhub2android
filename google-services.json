@@ -1,0 +1,59 @@
+{
+  "project_info": {
+    "project_number": "222064592113",
+    "firebase_url": "https://event-hub-80739.firebaseio.com",
+    "project_id": "event-hub",
+    "storage_bucket": "event-hub.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:222064592113:android:5ea17b935ca6f7d0",
+        "android_client_info": {
+          "package_name": "com.hemal.eventhub2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "222064592113-f8avemjq3n0viu57ipuv5vhnldp15kd2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hemal.eventhub2",
+            "certificate_hash": "E33D226D95DBEAB84D95DECC619E79EF02B26C93"
+          }
+        },
+        {
+          "client_id": "222064592113-60csk9b670l96agsn4hukc53a1q39ih4.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "222064592113-ca6v3cjje8cd0p3u195ack4m0gdosqnf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeAduyAI3HEbcUGEAWW2FQJWyGjWQRN2U"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "222064592113-60csk9b670l96agsn4hukc53a1q39ih4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

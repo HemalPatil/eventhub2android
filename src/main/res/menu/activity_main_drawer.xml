@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single" android:id="@+id/group_features">
+        <item
+            android:id="@+id/nav_events"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="Events" />
+        <item
+            android:id="@+id/nav_clubs"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="Clubs" />
+    </group>
+
+    <group android:checkableBehavior="single" android:id="@+id/group_account">
+        <item
+            android:id="@+id/nav_signinout"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="Sign out" />
+    </group>
+
+</menu>
