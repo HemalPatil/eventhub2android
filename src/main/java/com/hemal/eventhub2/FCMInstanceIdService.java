@@ -33,17 +33,16 @@ public class FCMInstanceIdService extends FirebaseInstanceIdService
 			if(ServerUtilities.registerFCMToken(email, token))
 			{
 				// fcm token registered with backend
+				// add the FCM token to the shared preferences of the app
+				SharedPreferences.Editor prefEditor = preferences.edit();
+				prefEditor.putString("fcmtoken", token);
+				prefEditor.commit();
 			}
 			else
 			{
 				// fcm token registration with backend failed
 			}
 		}
-
-		// add the FCM token to the shared preferences of the app
-		SharedPreferences.Editor prefEditor = preferences.edit();
-		prefEditor.putString("fcmtoken", token);
-		prefEditor.commit();
 
 		// TODO : make the user subscribe to all notifications of all events
 	}

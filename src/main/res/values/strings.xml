@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">Event Hub</string>
-
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
     <string-array name="tabs">
@@ -14,7 +12,7 @@
     <string name="btn_logout_from_google">Logout from Google</string>
     <string name="btn_revoke_access">Revoke Access</string>
 
-    <string name="server_client_id">156719298888-8tm8tmeab4ds7pq4ltij0etvk9ffeke6.apps.googleusercontent.com</string>
+    <string name="server_client_id">222064592113-ca6v3cjje8cd0p3u195ack4m0gdosqnf.apps.googleusercontent.com</string>
     <string name="title_activity_main">MainActivity</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>

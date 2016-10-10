@@ -50,7 +50,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		// check if user is logged in already
 		SharedPreferences preferences = getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
 		final String email = preferences.getString("email", "default");
-		if(email == "default")
+		final String fcmtoken = preferences.getString("fcmtoken", "default");
+		if(email == "default" || fcmtoken == "default")
 		{
 			// User not signed-in
 			Log.v("siginin", "Not signed in");

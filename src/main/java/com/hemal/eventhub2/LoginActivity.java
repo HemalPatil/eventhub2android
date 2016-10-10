@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,6 +26,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.hemal.eventhub2.helper.network.ConnectionDetector;
 import com.hemal.eventhub2.helper.network.ServerUtilities;
+
+import java.util.concurrent.ExecutionException;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener
 {
@@ -48,7 +51,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 		// google sign-in
 		findViewById(R.id.sign_in_button).setOnClickListener(this);
-		GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+		final String id = getResources().getString(R.string.server_client_id);
+		GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().requestIdToken(id).build();
 
 		mGoogleApiClient = new GoogleApiClient.Builder(this).enableAutoManage(this, this).addApi(Auth.GOOGLE_SIGN_IN_API, gso).build();
 
@@ -103,7 +107,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 			email = account.getEmail();
 
 			// TODO : register the google sign-in of the user
-			if(!ServerUtilities.registerGoogleSignIn(name, email))
+			if(!registerGoogleSignIn(name, email))
 			{
 				showAlert(BACKEND_REGISTER_FAILED);
 				return;
@@ -117,6 +121,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 			// TODO : add Google push notifications
 			FirebaseAuth fcmAuth = FirebaseAuth.getInstance();
+			Log.v("accounttoken", "lolz" + account.getIdToken() + "lolz");
 			AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
 			fcmAuth.signInWithCredential(credential)
 					.addOnCompleteListener(this, new OnCompleteListener<AuthResult>()
@@ -154,6 +159,23 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 		}
 	}
 
+	private boolean registerGoogleSignIn(final String name, final String email)
+	{
+		try
+		{
+			return new register().execute().get();
+		}
+		catch(ExecutionException e)
+		{
+			showAlert(BACKEND_REGISTER_FAILED);
+		}
+		catch(InterruptedException e)
+		{
+			showAlert(BACKEND_REGISTER_FAILED);
+		}
+		return false;
+	}
+
 	@Override
 	public void onConnectionFailed(ConnectionResult connectionResult)
 	{
@@ -168,5 +190,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 				.setIcon(android.R.drawable.ic_dialog_alert)
 				.setPositiveButton("OK", null)
 				.show();
+	}
+
+	private class register extends AsyncTask<Void, Void, Boolean>
+	{
+		@Override
+		protected Boolean doInBackground(Void... params)
+		{
+			return ServerUtilities.registerGoogleSignIn(name ,email);
+		}
 	}
 }
