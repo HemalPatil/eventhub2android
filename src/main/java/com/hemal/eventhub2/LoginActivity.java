@@ -145,7 +145,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 								// of FCMInstanceIdService. So we are decoupling the FCM token
 								// registration process and google sign-in registration process
 								// in Event Hub 2.0
-							} else
+							}
+							else
 							{
 								Log.v("fcmsignin", "signInWithCredential failed", task.getException());
 								LoginActivity.this.showAlert(GOOGLE_SIGNIN_FAILED);

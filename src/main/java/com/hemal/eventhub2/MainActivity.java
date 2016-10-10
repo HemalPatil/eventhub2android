@@ -38,6 +38,7 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -137,6 +138,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			{
 				try
 				{
+					Log.v("syncdbevent", response);
 					JSONObject jObj = new JSONObject(response);
 					if(jObj==null)
 					{
@@ -225,6 +227,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		AppController.getInstance().addToRequestQueue(strReq, REQUEST_TAG);
 	}
 
+	private ArrayList<Integer> getAllClubs()
+	{
+		ArrayList<Integer> list = new ArrayList<>();
+		Cursor c = localDB.rawQuery("SELECT id FROM event", null);
+		if(c!= null)
+		{
+			while(c.moveToNext())
+			{
+				list.add(c.getInt(c.getColumnIndex("id")));
+			}
+		}
+		c.close();
+
+		return list;
+	}
+
 	private String getLatestEventTimestamp()
 	{
 		String latestEvent = null;
@@ -258,6 +276,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				latestEvent = df.format(today);
 			}
 		}
+		c.close();
 
 		return latestEvent;
 	}
