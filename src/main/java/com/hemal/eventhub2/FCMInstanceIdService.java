@@ -27,6 +27,12 @@ public class FCMInstanceIdService extends FirebaseInstanceIdService
 		prefEditor.putString("fcmtoken", token);
 		prefEditor.commit();
 
+		final String email = preferences.getString("email", "default");
+		if(email != "default")
+		{
+			UserDetails.email = email;
+		}
+
 		if(UserDetails.email != null)
 		{
 			ServerUtilities.registerFCMToken(UserDetails.email, token);

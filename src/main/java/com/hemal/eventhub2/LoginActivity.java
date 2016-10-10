@@ -205,6 +205,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 			{
 				return false;
 			}
+			while(UserDetails.fcmtoken == null);	// Busy wait till the token is received
 			return ServerUtilities.registerFCMToken(email, UserDetails.fcmtoken);
 		}
 	}

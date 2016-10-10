@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.hemal.eventhub2.adapters.CustomEventListAdapter;
+import com.hemal.eventhub2.helper.DatabaseHelper;
 import com.hemal.eventhub2.helper.network.ConnectionDetector;
 import com.hemal.eventhub2.model.Event;
 
@@ -44,7 +45,7 @@ public class TodayFragment extends Fragment
 
 
 		View rootView = inflater.inflate(R.layout.today_fragment, container, false);
-		listView= (ListView) rootView.findViewById(R.id.list);
+		listView= (ListView) rootView.findViewById(R.id.todayeventlist);
 		eventList = new ArrayList<Event>();
 		eventList.clear();
 		flag=0;
@@ -59,7 +60,7 @@ public class TodayFragment extends Fragment
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String currentDateandTime = sdf.format(new Date());
 		Log.d("dasdasdasd", currentDateandTime);
-		/*FeedReaderDbHelper hp=new FeedReaderDbHelper(getContext());
+		DatabaseHelper hp =new DatabaseHelper(getContext());
 		DBRead= hp.getReadableDatabase();
 		getData(currentDateandTime);
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
@@ -69,7 +70,7 @@ public class TodayFragment extends Fragment
 					int position, long id)
 			{
 
-				Intent intent = new Intent(getActivity(), AboutEventActivity.class);
+				Intent intent = new Intent(getActivity(), LoginActivity.class);
 				Event e = (Event) parent.getItemAtPosition(position);
 				Log.d("tag", e.getEventName());
 				intent.putExtra("id", e.getId());
@@ -82,7 +83,7 @@ public class TodayFragment extends Fragment
 			}
 
 
-		});*/
+		});
 
 		return rootView;
 	}
