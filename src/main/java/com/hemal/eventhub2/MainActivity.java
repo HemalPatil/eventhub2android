@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		if(email == "default" || fcmtoken == "default")
 		{
 			// User not signed-in
-			Log.v("siginin", "Not signed in");
+			Log.v("signin", "Not signed in");
 			final String signInSkip = preferences.getString("signInSkip", "default");
 			if(signInSkip == "default")
 			{

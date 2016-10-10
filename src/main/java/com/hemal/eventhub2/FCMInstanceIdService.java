@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
+import com.hemal.eventhub2.app.UserDetails;
 import com.hemal.eventhub2.helper.network.ServerUtilities;
 
 /**
@@ -17,31 +18,18 @@ public class FCMInstanceIdService extends FirebaseInstanceIdService
 	public void onTokenRefresh()
 	{
 		String token = FirebaseInstanceId.getInstance().getToken();
-		Log.v("fcmtoken", token);
+		Log.v("fcmtokeninstance", token);
 
-		// TODO : register this generated/refreshed token with backend
+		// add the FCM token to the shared preferences of the app
+		UserDetails.fcmtoken = token;
 		SharedPreferences preferences = getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
+		SharedPreferences.Editor prefEditor = preferences.edit();
+		prefEditor.putString("fcmtoken", token);
+		prefEditor.commit();
 
-		// send the FCM token to the backend
-		final String email = preferences.getString("email", "default");
-		if(email == "default")
+		if(UserDetails.email != null)
 		{
-			// not signed-in through google
-		}
-		else
-		{
-			if(ServerUtilities.registerFCMToken(email, token))
-			{
-				// fcm token registered with backend
-				// add the FCM token to the shared preferences of the app
-				SharedPreferences.Editor prefEditor = preferences.edit();
-				prefEditor.putString("fcmtoken", token);
-				prefEditor.commit();
-			}
-			else
-			{
-				// fcm token registration with backend failed
-			}
+			ServerUtilities.registerFCMToken(UserDetails.email, token);
 		}
 
 		// TODO : make the user subscribe to all notifications of all events

@@ -24,6 +24,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.hemal.eventhub2.app.UserDetails;
 import com.hemal.eventhub2.helper.network.ConnectionDetector;
 import com.hemal.eventhub2.helper.network.ServerUtilities;
 
@@ -105,6 +106,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 			GoogleSignInAccount account = result.getSignInAccount();
 			name = account.getDisplayName();
 			email = account.getEmail();
+
+			UserDetails.email = email;
+			UserDetails.name = name;
 
 			// TODO : register the google sign-in of the user
 			if(!registerGoogleSignIn(name, email))
@@ -197,7 +201,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 		@Override
 		protected Boolean doInBackground(Void... params)
 		{
-			return ServerUtilities.registerGoogleSignIn(name ,email);
+			if(!ServerUtilities.registerGoogleSignIn(name, email))
+			{
+				return false;
+			}
+			return ServerUtilities.registerFCMToken(email, UserDetails.fcmtoken);
 		}
 	}
 }
