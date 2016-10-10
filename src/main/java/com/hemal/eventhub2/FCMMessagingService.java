@@ -8,9 +8,9 @@ import com.google.firebase.messaging.RemoteMessage;
 /**
  * Created by Hemal on 10-Oct-16.
  */
-public class FCMService extends FirebaseMessagingService
+public class FCMMessagingService extends FirebaseMessagingService
 {
-	private static final String TAG = "FCMService";
+	private static final String TAG = "FCMMessagingService";
 
 	@Override
 	public void onMessageReceived(RemoteMessage msg)
