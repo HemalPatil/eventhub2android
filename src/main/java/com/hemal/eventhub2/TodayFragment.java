@@ -1,6 +1,5 @@
 package com.hemal.eventhub2;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -21,7 +20,6 @@ import java.util.List;
 
 import com.hemal.eventhub2.adapters.CustomEventListAdapter;
 import com.hemal.eventhub2.helper.DatabaseHelper;
-import com.hemal.eventhub2.helper.network.ConnectionDetector;
 import com.hemal.eventhub2.model.Event;
 
 /**
@@ -29,39 +27,29 @@ import com.hemal.eventhub2.model.Event;
  */
 public class TodayFragment extends Fragment
 {
-
-	ConnectionDetector cd;
 	private List<Event> eventList;
-	private ProgressDialog pDialog;
-	int flag;
 	private ListView listView;
 	private CustomEventListAdapter adapter;
-	TextView eventvisible;
-	private SQLiteDatabase DBRead;
+	TextView noEvents;
+	private SQLiteDatabase localDB;
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-
-
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	{
 		View rootView = inflater.inflate(R.layout.today_fragment, container, false);
-		listView= (ListView) rootView.findViewById(R.id.todayeventlist);
-		eventList = new ArrayList<Event>();
+		listView = (ListView) rootView.findViewById(R.id.todayEventList);
+		eventList = new ArrayList<>();
 		eventList.clear();
-		flag=0;
-		eventvisible=(TextView)rootView.findViewById(R.id.eventvisible);
-		eventvisible.setVisibility(View.GONE);
+		noEvents = (TextView) rootView.findViewById(R.id.noEventsToday);
+		noEvents.setVisibility(View.GONE);
 
-		pDialog = new ProgressDialog(getActivity());
-		pDialog.setCancelable(false);
-
-		adapter = new CustomEventListAdapter(getActivity(), eventList);
+		adapter = new CustomEventListAdapter(getActivity(), eventList, "today");
 		listView.setAdapter(adapter);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String currentDateandTime = sdf.format(new Date());
 		Log.d("dasdasdasd", currentDateandTime);
-		DatabaseHelper hp =new DatabaseHelper(getContext());
-		DBRead= hp.getReadableDatabase();
+		DatabaseHelper hp = new DatabaseHelper(getContext());
+		localDB = hp.getReadableDatabase();
 		getData(currentDateandTime);
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
 		{
@@ -81,8 +69,6 @@ public class TodayFragment extends Fragment
 			public void onClick(View v)
 			{
 			}
-
-
 		});
 
 		return rootView;
@@ -93,7 +79,7 @@ public class TodayFragment extends Fragment
 
 		Log.v("inget", "Date " + date) ;
 		String night[]={date +" 00:00:00", date + " 23:59:59"};
-		Cursor cr = DBRead.rawQuery("SELECT * FROM event"/* where date_time>'" + night[0] + "' AND date_time<'" + night[1] + "'"*/, null);
+		Cursor cr = localDB.rawQuery("SELECT * FROM event"/* where date_time>'" + night[0] + "' AND date_time<'" + night[1] + "'"*/, null);
 
 		if(cr!=null && cr.moveToFirst())
 		{
@@ -110,89 +96,5 @@ public class TodayFragment extends Fragment
 				Log.v("eventtoday", e.getEventName());
 			}while(cr.moveToNext());
 		}
-        /*String tag_string_req = "req_event";
-        pDialog.setMessage("Getting Event Details ...");
-        showDialog();
-
-        StringRequest strReq = new StringRequest(Request.Method.POST,
-                URL.todayevents, new Response.Listener<String>() {
-
-            @Override
-            public void onResponse(String response) {
-                Log.d("Tag_event", "Register Response: " + response.toString());
-                hideDialog();
-
-                try {
-                    JSONObject jObj = new JSONObject(response);
-                    if(jObj==null)
-                    {
-                        Toast.makeText(getActivity(), "Please check the network", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    JSONArray jsonArray=jObj.getJSONArray("events");
-                    if(jsonArray.length()==0) {
-                        eventvisible.setVisibility(View.VISIBLE);
-                        listView.setVisibility(View.GONE);
-                    }
-                    for(int i=0;i<jsonArray.length();i++)
-                    {
-                        JSONObject jsonObject=jsonArray.getJSONObject(i);
-                        Event e=new Event();
-                        e.setId(Integer.valueOf(jsonObject.getString("id")));
-                        e.setEventName(jsonObject.getString("name"));
-                        e.setEventVenue(jsonObject.getString("venue"));
-                        String date=jsonObject.getString("date");
-                        String[] arr=date.split("T");
-                        date=arr[0]+"   "+arr[1].substring(0,5);
-                        e.setEventTime(date);
-
-                        eventList.add(e);
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                adapter.notifyDataSetChanged();
-                listView.invalidateViews();
-
-            }
-        }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("Error", "Registration Error: " + error.getMessage());
-                Toast.makeText(getActivity(),
-                        "Network is too slow :(", Toast.LENGTH_LONG).show();
-                hideDialog();
-            }
-        }) {
-
-            @Override
-            protected Map<String, String> getParams() {
-                // Posting params to register url
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("date", date);
-                return params;
-            }
-
-        };
-
-        // Adding request to request queue
-        AppController.getInstance().addToRequestQueue(strReq, tag_string_req);*/
 	}
-
-	private void showDialog() {
-		if (!pDialog.isShowing())
-			pDialog.show();
-	}
-
-	private void hideDialog() {
-		if (pDialog.isShowing())
-			pDialog.dismiss();
-	}
-
-
-
 }

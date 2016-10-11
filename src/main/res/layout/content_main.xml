@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:id="@+id/eventlayout"
+        android:id="@+id/eventLayout"
         android:visibility="visible">
 
         <com.hemal.eventhub2.helper.SlidingTabLayout
@@ -33,12 +33,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:id="@+id/clublayout"
+        android:id="@+id/clubLayout"
         android:visibility="gone">
-        <TextView
+
+        <ListView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Clubs"/>
+            android:id="@+id/clubsList"
+            android:divider="#e2e2e2"
+            android:dividerHeight="4dp" />
+
     </LinearLayout>
 
 </RelativeLayout>

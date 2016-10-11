@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			// the fcm token also needs to be updated if the token was refreshed but could not be updated at the backend
 			// the app always has the recent token stored in its shared preferences
 			testAndSetFCMToken();
-			syncEvents();
+			syncDatabase();
 		}
 
 		// Create and add the fragments to the Events layout
@@ -131,6 +131,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		mTabs.setSelectedIndicatorColors(getResources().getColor(R.color.colorPrimaryDark));
 		mTabs.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
 		mTabs.setViewPager(mPager);
+
+
     }
 
 	private void testAndSetFCMToken()
@@ -138,11 +140,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		new registerFCM().execute();
 	}
 
-	private void syncEvents()
+	private void syncDatabase()
 	{
 		Log.v("syncdb", "syncing database");
 		final String latestEvent = getLatestEventTimestamp();
-		final String REQUEST_TAG = "syncDBRequest";
 		final ArrayList<Integer> existingClubs = getAllClubs();
 
 		StringRequest strReq = new StringRequest(Request.Method.POST, URL.syncevents,
@@ -152,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 					public void onResponse(String response)
 					{
 						ArrayList<Integer> newClubs = new ArrayList<>();
+						newClubs.clear();
 						try
 						{
 							JSONObject jObj = new JSONObject(response);
@@ -217,6 +219,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 								Integer ID = (int)newID;
 								Log.v("eventaddedID", ID.toString());
 							}
+
 							// No need to request the server for new clubs if there is no new club to be added
 							if(newClubs.size() > 0)
 							{
@@ -249,6 +252,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		};
 
 		// Adding request to request queue
+		final String REQUEST_TAG = "syncEventsRequest";
 		AppController.getInstance().addToRequestQueue(strReq, REQUEST_TAG);
 	}
 
@@ -288,7 +292,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 						@Override
 						public void onResponse(String response)
 						{
-							//Log.v("syncclubs", response);
 							try
 							{
 								JSONObject jObj = new JSONObject(response);
@@ -401,14 +404,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.nav_events)
 		{
-			findViewById(R.id.clublayout).setVisibility(View.GONE);
-			findViewById(R.id.eventlayout).setVisibility(View.VISIBLE);
+			findViewById(R.id.clubLayout).setVisibility(View.GONE);
+			findViewById(R.id.eventLayout).setVisibility(View.VISIBLE);
 			toolbar.setTitle(R.string.eventString);
         }
 		else if (id == R.id.nav_clubs)
 		{
-			findViewById(R.id.eventlayout).setVisibility(View.GONE);
-			findViewById(R.id.clublayout).setVisibility(View.VISIBLE);
+			findViewById(R.id.eventLayout).setVisibility(View.GONE);
+			findViewById(R.id.clubLayout).setVisibility(View.VISIBLE);
 			toolbar.setTitle(R.string.clubString);
         }
 		else if (id == R.id.nav_signout)
@@ -428,7 +431,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		public MyPagerAdapter(FragmentManager fm)
 		{
 			super(fm);
-			tabs = getResources().getStringArray(R.array.tabs);
+			tabs = getResources().getStringArray(R.array.eventTabNames);
 		}
 
 		@Override

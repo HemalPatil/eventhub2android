@@ -44,7 +44,7 @@ public class ProfileFragment extends Fragment
 		eventList.clear();
 		pDialog = new ProgressDialog(getActivity());
 		pDialog.setCancelable(false);
-		adapter = new CustomEventListAdapter(getActivity(), eventList);
+		adapter = new CustomEventListAdapter(getActivity(), eventList, "profile");
 
 		listView.setAdapter(adapter);
 

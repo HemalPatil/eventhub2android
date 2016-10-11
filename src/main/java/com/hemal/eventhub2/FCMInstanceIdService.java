@@ -7,8 +7,6 @@ import android.util.Log;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.hemal.eventhub2.app.UserDetails;
-import com.hemal.eventhub2.helper.network.ConnectionDetector;
-import com.hemal.eventhub2.helper.network.ServerUtilities;
 
 /**
  * Created by Hemal on 10-Oct-16.

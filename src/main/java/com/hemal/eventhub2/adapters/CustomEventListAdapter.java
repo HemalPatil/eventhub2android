@@ -2,6 +2,7 @@ package com.hemal.eventhub2.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,11 +25,14 @@ public class CustomEventListAdapter extends BaseAdapter {
 	private Activity activity;
 	private LayoutInflater inflater;
 	private List<Event> eventItems;
+	private String TAG;
 
-	public CustomEventListAdapter(Activity activity, List<Event> eventItems)
+	public CustomEventListAdapter(Activity activity, List<Event> eventItems, final String x)
 	{
 		this.activity=activity;
 		this.eventItems=eventItems;
+		this.TAG = x;
+		Log.v("customevent", "number of events : " + this.eventItems.size() + " " + TAG);
 	}
 
 
@@ -52,6 +56,7 @@ public class CustomEventListAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+		Log.v("customevent", "get view called " + TAG);
 		if (inflater == null)
 			inflater = (LayoutInflater) activity
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

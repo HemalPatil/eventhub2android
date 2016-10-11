@@ -16,10 +16,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-/*import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.GoogleAuthProvider;*/
 import com.hemal.eventhub2.app.UserDetails;
 import com.hemal.eventhub2.helper.network.ConnectionDetector;
 import com.hemal.eventhub2.helper.network.ServerUtilities;

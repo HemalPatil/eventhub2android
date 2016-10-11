@@ -5,11 +5,16 @@
     <string name="eventString">Events</string>
     <string name="clubString">Clubs</string>
 
-    <string-array name="tabs">
+    <string-array name="eventTabNames">
         <item>MY EVENTS</item>
         <item>TODAY</item>
         <item>UPCOMING</item>
     </string-array>
+
+    <string name="noEventsToday">No Events for Today :(</string>
+    <string name="noEventsUpcoming">No Upcoming Events :(</string>
+
+    <string name="refresh">Refresh</string>
 
     <!-- Button text -->
     <string name="btn_logout_from_google">Logout from Google</string>

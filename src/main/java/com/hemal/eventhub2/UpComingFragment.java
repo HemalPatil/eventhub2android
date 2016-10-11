@@ -43,7 +43,7 @@ public class UpComingFragment extends Fragment
 		eventList.clear();
 		pDialog = new ProgressDialog(getActivity());
 		pDialog.setCancelable(false);
-		adapter = new CustomEventListAdapter(getActivity(), eventList);
+		adapter = new CustomEventListAdapter(getActivity(), eventList, "upcoming");
 		listView.setAdapter(adapter);
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
