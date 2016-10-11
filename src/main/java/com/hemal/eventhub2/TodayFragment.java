@@ -16,7 +16,6 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import com.hemal.eventhub2.adapters.CustomEventListAdapter;
 import com.hemal.eventhub2.helper.DatabaseHelper;
@@ -27,10 +26,10 @@ import com.hemal.eventhub2.model.Event;
  */
 public class TodayFragment extends Fragment
 {
-	private List<Event> eventList;
+	private ArrayList<Event> eventList;
 	private ListView listView;
 	private CustomEventListAdapter adapter;
-	TextView noEvents;
+	private TextView noEvents;
 	private SQLiteDatabase localDB;
 
 	@Override
@@ -38,26 +37,29 @@ public class TodayFragment extends Fragment
 	{
 		View rootView = inflater.inflate(R.layout.today_fragment, container, false);
 		listView = (ListView) rootView.findViewById(R.id.todayEventList);
-		eventList = new ArrayList<>();
-		eventList.clear();
 		noEvents = (TextView) rootView.findViewById(R.id.noEventsToday);
 		noEvents.setVisibility(View.GONE);
 
+		eventList = new ArrayList<>();
+		eventList.clear();
+
 		adapter = new CustomEventListAdapter(getActivity(), eventList, "today");
 		listView.setAdapter(adapter);
+
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		String currentDateandTime = sdf.format(new Date());
-		Log.d("dasdasdasd", currentDateandTime);
+		String currentDateAndTime = sdf.format(new Date());
+		Log.d("dasdasdas", currentDateAndTime);
+
 		DatabaseHelper hp = new DatabaseHelper(getContext());
 		localDB = hp.getReadableDatabase();
-		getData(currentDateandTime);
+
+		addEventsToFragment(currentDateAndTime);
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
 		{
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id)
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
-
+				// TODO : change the LoginActivity class with AboutEventActivity
 				Intent intent = new Intent(getActivity(), LoginActivity.class);
 				Event e = (Event) parent.getItemAtPosition(position);
 				Log.d("tag", e.getEventName());
@@ -75,16 +77,18 @@ public class TodayFragment extends Fragment
 	}
 
 
-	private void getData(final String date) {
-
+	private void addEventsToFragment(final String date)
+	{
 		Log.v("inget", "Date " + date) ;
 		String night[]={date +" 00:00:00", date + " 23:59:59"};
-		Cursor cr = localDB.rawQuery("SELECT * FROM event"/* where date_time>'" + night[0] + "' AND date_time<'" + night[1] + "'"*/, null);
+		// TODO : to be only used for testing purposes
+		Cursor cr = localDB.rawQuery("SELECT * FROM event ORDER BY date_time", null);
+		Cursor cr = localDB.rawQuery("SELECT * FROM event WHERE date_time>'" + night[0] + "' AND date_time<'" + night[1] + "' ORDER BY date_time", null);
 
-		if(cr!=null && cr.moveToFirst())
+		if(cr!=null)
 		{
 			Log.v("fetched", "TodayFragment cursor working");
-			do
+			while(cr.moveToNext())
 			{
 				Event e = new Event();
 				e.setId(Integer.valueOf(cr.getString(cr.getColumnIndex("id"))));
@@ -94,7 +98,7 @@ public class TodayFragment extends Fragment
 				e.setEventTime(DBdate);
 				eventList.add(e);
 				Log.v("eventtoday", e.getEventName());
-			}while(cr.moveToNext());
+			}
 		}
 	}
 }

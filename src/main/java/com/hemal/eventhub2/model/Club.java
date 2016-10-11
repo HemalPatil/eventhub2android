@@ -8,4 +8,10 @@ public class Club
 	public Integer clubID;
 	public String name;
 	public String alias;
+
+	@Override
+	public String toString()
+	{
+		return name;
+	}
 }

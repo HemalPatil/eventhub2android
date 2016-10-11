@@ -21,6 +21,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -33,6 +35,7 @@ import com.hemal.eventhub2.helper.DatabaseHelper;
 import com.hemal.eventhub2.helper.SlidingTabLayout;
 import com.hemal.eventhub2.helper.network.ConnectionDetector;
 import com.hemal.eventhub2.helper.network.ServerUtilities;
+import com.hemal.eventhub2.model.Club;
 import com.hemal.eventhub2.model.Event;
 
 import org.json.JSONArray;
@@ -48,12 +51,14 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
 {
-	private DatabaseHelper DBHelper;
 	private SQLiteDatabase localDB;
 	private SlidingTabLayout mTabs;
 	private ConnectionDetector cd;
 	private ViewPager mPager;
 	private Toolbar toolbar;
+	private ListView clubsListView;
+	private ArrayAdapter<Club> clubAdapter;
+	private ArrayList<Club> allClubs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -107,8 +112,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			Log.v("signin", "Signed in as : " + email);
 		}
 
-		DBHelper = new DatabaseHelper(this);
+		DatabaseHelper DBHelper = new DatabaseHelper(this);
 		localDB = DBHelper.getWritableDatabase();
+
+		allClubs = getAllClubs();
 
 		cd = new ConnectionDetector(getApplicationContext());
 		if(cd.isConnectedToInternet() && UserDetails.email != null)
@@ -132,7 +139,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		mTabs.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
 		mTabs.setViewPager(mPager);
 
-
+		// TODO : add listener to listview item click and follow button click
+		clubsListView = (ListView) findViewById(R.id.clubsList);
+		clubAdapter = new ArrayAdapter<>(this, R.layout.club_row, R.id.clubName, allClubs);
+		clubsListView.setAdapter(clubAdapter);
     }
 
 	private void testAndSetFCMToken()
@@ -144,7 +154,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	{
 		Log.v("syncdb", "syncing database");
 		final String latestEvent = getLatestEventTimestamp();
-		final ArrayList<Integer> existingClubs = getAllClubs();
+		final ArrayList<Integer> existingClubs = new ArrayList<>();
+		for(Club c : allClubs)
+		{
+			existingClubs.add(c.clubID);
+		}
 
 		StringRequest strReq = new StringRequest(Request.Method.POST, URL.syncevents,
 				new Response.Listener<String>()
@@ -167,6 +181,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 							int len = jsonArray.length();
 							for(int i=0;i<len;i++)
 							{
+								// TODO : remove redundant code
 								JSONObject jsonObject=jsonArray.getJSONObject(i);
 								Event e=new Event();
 								e.setId(Integer.valueOf(jsonObject.getString("id")));
@@ -256,16 +271,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		AppController.getInstance().addToRequestQueue(strReq, REQUEST_TAG);
 	}
 
-	private ArrayList<Integer> getAllClubs()
+	private ArrayList<Club> getAllClubs()
 	{
-		ArrayList<Integer> list = new ArrayList<>();
-		Cursor c = localDB.rawQuery("SELECT id FROM club", null);
+		ArrayList<Club> list = new ArrayList<>();
+		Cursor c = localDB.rawQuery("SELECT * FROM club", null);
 		if(c != null)
 		{
 			while(c.moveToNext())
 			{
-				Log.v("newclub", "Existing club : " + c.getInt(c.getColumnIndex("id")));
-				list.add(c.getInt(c.getColumnIndex("id")));
+				Club club = new Club();
+				club.clubID = c.getInt(c.getColumnIndex("id"));
+				club.name = c.getString(c.getColumnIndex("name"));
+				club.alias = c.getString(c.getColumnIndex("alias"));
+				Log.v("newclub", "Existing club : " + club.name);
+				list.add(club);
 			}
 		}
 		c.close();
@@ -301,11 +320,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 								{
 									JSONObject clubObject = jArray.getJSONObject(i);
 									ContentValues clubValues = new ContentValues();
-									clubValues.put("id", clubObject.getInt("id"));
-									clubValues.put("name", clubObject.getString("name"));
-									clubValues.put("alias", clubObject.getString("alias"));
+									Club nc = new Club();
+									nc.clubID = clubObject.getInt("id");
+									nc.name = clubObject.getString("name");
+									nc.alias = clubObject.getString("alias");
+									clubValues.put("id", nc.clubID);
+									clubValues.put("name", nc.name);
+									clubValues.put("alias", nc.alias);
+									allClubs.add(nc);
 									localDB.insert("club", null, clubValues);
 								}
+								// TODO : test this after swipe refresh implemented
+								clubAdapter.notifyDataSetChanged();
 							}
 							catch (JSONException e)
 							{

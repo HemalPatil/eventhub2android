@@ -15,53 +15,54 @@ import com.hemal.eventhub2.helper.gmailLetter.ColorGenerator;
 import com.hemal.eventhub2.helper.gmailLetter.TextDrawable;
 import com.hemal.eventhub2.model.Event;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by Hemal on 09-Oct-16.
  */
-public class CustomEventListAdapter extends BaseAdapter {
-
+public class CustomEventListAdapter extends BaseAdapter
+{
 	private Activity activity;
 	private LayoutInflater inflater;
-	private List<Event> eventItems;
+	private ArrayList<Event> eventItems;
 	private String TAG;
 
-	public CustomEventListAdapter(Activity activity, List<Event> eventItems, final String x)
+	// TODO : remove string tag in production code
+	public CustomEventListAdapter(Activity activity, ArrayList<Event> eventItems, final String x)
 	{
-		this.activity=activity;
-		this.eventItems=eventItems;
+		this.activity = activity;
+		this.eventItems = eventItems;
 		this.TAG = x;
 		Log.v("customevent", "number of events : " + this.eventItems.size() + " " + TAG);
 	}
-
 
 	@Override
 	public int getCount() {
 		return eventItems.size();
 	}
 
-
 	@Override
 	public Object getItem(int location) {
 		return eventItems.get(location);
 	}
-
 
 	@Override
 	public long getItemId(int position) {
 		return position;
 	}
 
-
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public View getView(int position, View convertView, ViewGroup parent)
+	{
 		Log.v("customevent", "get view called " + TAG);
 		if (inflater == null)
-			inflater = (LayoutInflater) activity
-					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		{
+			inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		}
 		if (convertView == null)
+		{
 			convertView = inflater.inflate(R.layout.event_row, null);
+		}
 
 		TextView eventName = (TextView) convertView.findViewById(R.id.eventName);
 		TextView eventTime = (TextView) convertView.findViewById(R.id.eventTime);
@@ -78,6 +79,7 @@ public class CustomEventListAdapter extends BaseAdapter {
 		TextDrawable drawable = TextDrawable.builder()
 				.buildRound(String.valueOf(event.getEventName().charAt(0)).toUpperCase(), charColor);
 		icon.setImageDrawable(drawable);
+
 		return convertView;
 	}
 }

@@ -27,7 +27,7 @@ public class ProfileFragment extends Fragment
 {
 
 	ConnectionDetector cd;
-	private List<Event> eventList;
+	private ArrayList<Event> eventList;
 	private ProgressDialog pDialog;
 	SharedPreferences sharedPreferences;
 	String email;

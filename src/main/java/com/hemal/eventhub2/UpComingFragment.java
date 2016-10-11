@@ -27,7 +27,7 @@ public class UpComingFragment extends Fragment
 {
 
 	ConnectionDetector cd;
-	private List<Event> eventList;
+	private ArrayList<Event> eventList;
 	private ProgressDialog pDialog;
 
 	private ListView listView;
