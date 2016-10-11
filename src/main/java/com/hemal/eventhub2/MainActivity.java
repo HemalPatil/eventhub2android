@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -21,17 +22,17 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.hemal.eventhub2.app.AppController;
 import com.hemal.eventhub2.app.URL;
+import com.hemal.eventhub2.app.UserDetails;
 import com.hemal.eventhub2.helper.DatabaseHelper;
 import com.hemal.eventhub2.helper.SlidingTabLayout;
 import com.hemal.eventhub2.helper.network.ConnectionDetector;
+import com.hemal.eventhub2.helper.network.ServerUtilities;
 import com.hemal.eventhub2.model.Event;
 
 import org.json.JSONArray;
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	private SlidingTabLayout mTabs;
 	private ConnectionDetector cd;
 	private ViewPager mPager;
+	private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -61,7 +63,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		Log.v("appactivities", "Main activity onCreate called");
 
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+		toolbar.setTitle(R.string.eventString);
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -76,8 +79,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		// check if user is logged in already
 		SharedPreferences preferences = getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
 		final String email = preferences.getString("email", "default");
-		final String fcmtoken = preferences.getString("fcmtoken", "default");
-		if(email == "default" || fcmtoken == "default")
+		if(email == "default")
 		{
 			// User not signed-in
 			Log.v("signin", "Not signed in");
@@ -88,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				Log.v("appopen", "first time");
 				startActivity(new Intent(this, LoginActivity.class));
 				finish();
+				return;
 			}
 			/*else if(signInSkip == "skipped")
 			{
@@ -97,20 +100,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		else
 		{
 			// User signed-in already
+			UserDetails.email = email;
+			final String fcmToken = preferences.getString("fcmtoken", "default");
+			Log.v("fcmtoken", "Main activity " + fcmToken);
+			UserDetails.fcmToken = fcmToken;
 			Log.v("signin", "Signed in as : " + email);
 		}
 
 		DBHelper = new DatabaseHelper(this);
 		localDB = DBHelper.getWritableDatabase();
 
-		// TODO : add the below functionality
-		// some times due to race conditions mobile_id (fcmtoken) in db of our backend remians blank
-		// make sure that this token is present in the db, if not present, send the token from here
-		//testAndSetFCMToken();
-
 		cd = new ConnectionDetector(getApplicationContext());
-		if(cd.isConnectedToInternet())
+		if(cd.isConnectedToInternet() && UserDetails.email != null)
 		{
+			// some times due to race conditions mobile_id (fcmToken) in db of our backend remains blank
+			// make sure that this token is present in the db, if not present, send the token from here
+			// the fcm token also needs to be updated if the token was refreshed but could not be updated at the backend
+			// the app always has the recent token stored in its shared preferences
+			testAndSetFCMToken();
 			syncEvents();
 		}
 
@@ -121,10 +128,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		mTabs = (SlidingTabLayout) findViewById(R.id.eventsTabs);
 		mTabs.setDistributeEvenly(true);
 		mTabs.setCustomTabView(R.layout.custom_tab_view, R.id.tabText);
-		mTabs.setSelectedIndicatorColors(getResources().getColor(R.color.colorAccent));
+		mTabs.setSelectedIndicatorColors(getResources().getColor(R.color.colorPrimaryDark));
 		mTabs.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
 		mTabs.setViewPager(mPager);
     }
+
+	private void testAndSetFCMToken()
+	{
+		new registerFCM().execute();
+	}
 
 	private void syncEvents()
 	{
@@ -205,7 +217,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 								Integer ID = (int)newID;
 								Log.v("eventaddedID", ID.toString());
 							}
-							MainActivity.this.syncClubs(newClubs);
+							// No need to request the server for new clubs if there is no new club to be added
+							if(newClubs.size() > 0)
+							{
+								MainActivity.this.syncClubs(newClubs);
+							}
 						}
 						catch (JSONException e)
 						{
@@ -239,11 +255,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	private ArrayList<Integer> getAllClubs()
 	{
 		ArrayList<Integer> list = new ArrayList<>();
-		Cursor c = localDB.rawQuery("SELECT id FROM event", null);
-		if(c!= null)
+		Cursor c = localDB.rawQuery("SELECT id FROM club", null);
+		if(c != null)
 		{
 			while(c.moveToNext())
 			{
+				Log.v("newclub", "Existing club : " + c.getInt(c.getColumnIndex("id")));
 				list.add(c.getInt(c.getColumnIndex("id")));
 			}
 		}
@@ -355,6 +372,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			}
 		}
 		c.close();
+		// TODO : remove this for production code, only for testing purposes
 		latestEvent = "1970-01-01 00:00:00";
 
 		return latestEvent;
@@ -385,13 +403,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		{
 			findViewById(R.id.clublayout).setVisibility(View.GONE);
 			findViewById(R.id.eventlayout).setVisibility(View.VISIBLE);
+			toolbar.setTitle(R.string.eventString);
         }
 		else if (id == R.id.nav_clubs)
 		{
 			findViewById(R.id.eventlayout).setVisibility(View.GONE);
 			findViewById(R.id.clublayout).setVisibility(View.VISIBLE);
+			toolbar.setTitle(R.string.clubString);
         }
-		else if (id == R.id.nav_signinout)
+		else if (id == R.id.nav_signout)
 		{
 
         }
@@ -437,6 +457,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		public int getCount()
 		{
 			return 3;
+		}
+	}
+
+	private class registerFCM extends AsyncTask<Void, Void, Boolean>
+	{
+		@Override
+		protected Boolean doInBackground(Void... params)
+		{
+			return ServerUtilities.registerFCMToken(UserDetails.email, UserDetails.fcmToken);
 		}
 	}
 }

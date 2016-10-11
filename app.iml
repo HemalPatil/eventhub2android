@@ -83,9 +83,6 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.android.gms/play-services-tasks/9.6.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.firebase/firebase-analytics-impl/9.6.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.firebase/firebase-analytics/9.6.1/jars" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.firebase/firebase-auth-common/9.6.1/jars" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.firebase/firebase-auth-module/9.6.1/jars" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.firebase/firebase-auth/9.6.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.firebase/firebase-common/9.6.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.firebase/firebase-core/9.6.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.firebase/firebase-iid/9.6.1/jars" />
@@ -103,7 +100,6 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 23 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="firebase-auth-9.6.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-base-9.6.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-auth-base-9.6.1" level="project" />
     <orderEntry type="library" exported="" name="firebase-messaging-9.6.1" level="project" />
@@ -113,12 +109,10 @@
     <orderEntry type="library" exported="" name="design-23.2.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-tasks-9.6.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-basement-9.6.1" level="project" />
-    <orderEntry type="library" exported="" name="firebase-auth-common-9.6.1" level="project" />
     <orderEntry type="library" exported="" name="recyclerview-v7-23.2.1" level="project" />
-    <orderEntry type="library" exported="" name="firebase-auth-module-9.6.1" level="project" />
     <orderEntry type="library" exported="" name="volley-1.0.0" level="project" />
-    <orderEntry type="library" exported="" name="firebase-common-9.6.1" level="project" />
     <orderEntry type="library" exported="" name="firebase-core-9.6.1" level="project" />
+    <orderEntry type="library" exported="" name="firebase-common-9.6.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-auth-9.6.1" level="project" />
     <orderEntry type="library" exported="" name="firebase-analytics-9.6.1" level="project" />
     <orderEntry type="library" exported="" name="firebase-iid-9.6.1" level="project" />

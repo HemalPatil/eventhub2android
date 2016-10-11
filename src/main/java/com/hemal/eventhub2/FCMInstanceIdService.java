@@ -7,6 +7,7 @@ import android.util.Log;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.hemal.eventhub2.app.UserDetails;
+import com.hemal.eventhub2.helper.network.ConnectionDetector;
 import com.hemal.eventhub2.helper.network.ServerUtilities;
 
 /**
@@ -21,22 +22,10 @@ public class FCMInstanceIdService extends FirebaseInstanceIdService
 		Log.v("fcmtokeninstance", token);
 
 		// add the FCM token to the shared preferences of the app
-		UserDetails.fcmtoken = token;
-		SharedPreferences preferences = getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
-		SharedPreferences.Editor prefEditor = preferences.edit();
+		UserDetails.fcmToken = token;
+		SharedPreferences.Editor prefEditor = getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE).edit();
 		prefEditor.putString("fcmtoken", token);
 		prefEditor.commit();
-
-		final String email = preferences.getString("email", "default");
-		if(email != "default")
-		{
-			UserDetails.email = email;
-		}
-
-		if(UserDetails.email != null)
-		{
-			ServerUtilities.registerFCMToken(UserDetails.email, token);
-		}
 
 		// TODO : make the user subscribe to all notifications of all events
 	}

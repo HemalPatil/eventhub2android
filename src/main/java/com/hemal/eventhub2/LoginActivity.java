@@ -5,10 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import com.google.android.gms.auth.api.Auth;
@@ -18,12 +16,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
+/*import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.GoogleAuthProvider;*/
 import com.hemal.eventhub2.app.UserDetails;
 import com.hemal.eventhub2.helper.network.ConnectionDetector;
 import com.hemal.eventhub2.helper.network.ServerUtilities;
@@ -52,7 +48,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 		// google sign-in
 		findViewById(R.id.sign_in_button).setOnClickListener(this);
-		final String id = getResources().getString(R.string.server_client_id);
+		final String id = getResources().getString(R.string.serverClientID);
 		GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().requestIdToken(id).build();
 
 		mGoogleApiClient = new GoogleApiClient.Builder(this).enableAutoManage(this, this).addApi(Auth.GOOGLE_SIGN_IN_API, gso).build();
@@ -110,8 +106,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 			UserDetails.email = email;
 			UserDetails.name = name;
 
-			// TODO : register the google sign-in of the user
-			if(!registerGoogleSignIn(name, email))
+			if(!registerGoogleSignIn())
 			{
 				showAlert(BACKEND_REGISTER_FAILED);
 				return;
@@ -123,37 +118,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 			preferencesEditor.putString("name", name);
 			preferencesEditor.commit();
 
-			// TODO : add Google push notifications
-			FirebaseAuth fcmAuth = FirebaseAuth.getInstance();
-			Log.v("accounttoken", "lolz" + account.getIdToken() + "lolz");
-			AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
-			fcmAuth.signInWithCredential(credential)
-					.addOnCompleteListener(this, new OnCompleteListener<AuthResult>()
-					{
-						@Override
-						public void onComplete(@NonNull Task<AuthResult> task)
-						{
-							Log.v("fcmsignin", "signInWithCredential:onComplete:" + task.isSuccessful());
-
-							// If sign in fails, display a message to the user. If sign in succeeds
-							// the auth state listener will be notified and logic to handle the
-							// signed in user can be handled in the listener.
-							if (task.isSuccessful())
-							{
-								Log.v("fcmsignin", "signInWithCredential successful");
-								// the generated/refreshed token is handled by onTokenRefresh()
-								// of FCMInstanceIdService. So we are decoupling the FCM token
-								// registration process and google sign-in registration process
-								// in Event Hub 2.0
-							}
-							else
-							{
-								Log.v("fcmsignin", "signInWithCredential failed", task.getException());
-								LoginActivity.this.showAlert(GOOGLE_SIGNIN_FAILED);
-							}
-						}
-					});
-
 			// user information is gathered, take the user to MainActivity
 			startActivity(new Intent(this, MainActivity.class));
 			finish();
@@ -164,11 +128,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 		}
 	}
 
-	private boolean registerGoogleSignIn(final String name, final String email)
+	private boolean registerGoogleSignIn()
 	{
 		try
 		{
-			return new register().execute().get();
+			return new registerGoogle().execute().get();
 		}
 		catch(ExecutionException e)
 		{
@@ -197,17 +161,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 				.show();
 	}
 
-	private class register extends AsyncTask<Void, Void, Boolean>
+	private class registerGoogle extends AsyncTask<Void, Void, Boolean>
 	{
 		@Override
 		protected Boolean doInBackground(Void... params)
 		{
-			if(!ServerUtilities.registerGoogleSignIn(name, email))
-			{
-				return false;
-			}
-			while(UserDetails.fcmtoken == null);	// Busy wait till the token is received
-			return ServerUtilities.registerFCMToken(email, UserDetails.fcmtoken);
+			return ServerUtilities.registerGoogleSignIn(UserDetails.name, UserDetails.email);
 		}
 	}
 }

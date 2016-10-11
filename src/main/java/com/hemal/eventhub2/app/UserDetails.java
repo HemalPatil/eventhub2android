@@ -7,5 +7,5 @@ public class UserDetails
 {
 	public static String email = null;
 	public static String name = null;
-	public static String fcmtoken = null;
+	public static String fcmToken = null;
 }

@@ -5,18 +5,21 @@
         <item
             android:id="@+id/nav_events"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Events" />
+            android:title="@string/eventString"
+            android:checked="true"/>
         <item
             android:id="@+id/nav_clubs"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Clubs" />
+            android:title="@string/clubString"
+            android:checked="false"/>
     </group>
 
     <group android:checkableBehavior="single" android:id="@+id/group_account">
         <item
-            android:id="@+id/nav_signinout"
+            android:id="@+id/nav_signout"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Sign out" />
+            android:title="Sign out"
+            android:checked="false"/>
     </group>
 
 </menu>
