@@ -21,9 +21,11 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.hemal.eventhub2.app.AppController;
 import com.hemal.eventhub2.app.URL;
@@ -109,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		cd = new ConnectionDetector(getApplicationContext());
 		if(cd.isConnectedToInternet())
 		{
-			syncDatabase();
+			syncEvents();
 		}
 
 		// Create and add the fragments to the Events layout
@@ -124,100 +126,107 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		mTabs.setViewPager(mPager);
     }
 
-	private void syncDatabase()
+	private void syncEvents()
 	{
 		Log.v("syncdb", "syncing database");
 		final String latestEvent = getLatestEventTimestamp();
 		final String REQUEST_TAG = "syncDBRequest";
+		final ArrayList<Integer> existingClubs = getAllClubs();
 
-		StringRequest strReq = new StringRequest(Request.Method.POST, URL.syncdb,
-				new Response.Listener<String>() {
-
-			@Override
-			public void onResponse(String response)
-			{
-				try
+		StringRequest strReq = new StringRequest(Request.Method.POST, URL.syncevents,
+				new Response.Listener<String>()
 				{
-					Log.v("syncdbevent", response);
-					JSONObject jObj = new JSONObject(response);
-					if(jObj==null)
+					@Override
+					public void onResponse(String response)
 					{
-						Log.v("jsonerror", "json response is null not standard error");
-						return;
+						ArrayList<Integer> newClubs = new ArrayList<>();
+						try
+						{
+							JSONObject jObj = new JSONObject(response);
+							if(jObj==null)
+							{
+								Log.v("jsonerror", "json response is null not standard error");
+								return;
+							}
+							Log.v("success", "volley success finally!");
+							JSONArray jsonArray=jObj.getJSONArray("events");
+							int len = jsonArray.length();
+							for(int i=0;i<len;i++)
+							{
+								JSONObject jsonObject=jsonArray.getJSONObject(i);
+								Event e=new Event();
+								e.setId(Integer.valueOf(jsonObject.getString("id")));
+								e.setEventName(jsonObject.getString("name"));
+								e.setEventVenue(jsonObject.getString("venue"));
+								e.setEventTime(jsonObject.getString("date"));
+								Log.v("eventworking", "event loop working ");
+
+								String eventname = jsonObject.getString("name");
+								String eventvenue = jsonObject.getString("venue");
+								String eventtype = jsonObject.getString("type");
+								String eventsubtype = jsonObject.getString("subtype");
+								String eventclub = jsonObject.getString("club");
+								String eventcontact1name = jsonObject.getString("contact_name_1");
+								String eventcontact2name = jsonObject.getString("contact_name_2");
+								String eventcontact1number = jsonObject.getString("contact_number_1");
+								String eventcontact2number = jsonObject.getString("contact_number_2");
+								Integer eventIDint = jsonObject.getInt("id");
+								String eventalias = jsonObject.getString("alias");
+								Integer eventClubID = jsonObject.getInt("clubid");
+								if(!existingClubs.contains(eventClubID) && !newClubs.contains(eventClubID))
+								{
+									newClubs.add(eventClubID);
+								}
+								//String eventdatestr = jsonObject.getString("date");
+								String datetime=jsonObject.getString("date");
+								String[] arr=datetime.split("T");
+								String eventdatetime = arr[0]+" "+arr[1];
+								datetime = jsonObject.getString("created_on");
+								arr=datetime.split("T");
+								String eventcreatedon = arr[0]+" "+arr[1];
+
+								Log.v("eventdetails", eventname + eventvenue + eventtype + eventsubtype + eventclub + eventcontact1name + eventcontact2name + eventcontact1number + eventcontact2number + eventIDint + " " + eventalias + " " + eventdatetime + " " + eventcreatedon + " " + eventClubID.toString());
+
+								ContentValues eventValues = new ContentValues();
+								eventValues.put("id", eventIDint);
+								eventValues.put("name", eventname);
+								eventValues.put("type", eventtype);
+								eventValues.put("subtype", eventsubtype);
+								eventValues.put("venue", eventvenue);
+								eventValues.put("club_id", eventClubID);
+								eventValues.put("date_time", eventdatetime);
+								eventValues.put("contact_name_1", eventcontact1name);
+								eventValues.put("contact_name_2", eventcontact2name);
+								eventValues.put("contact_number_1", eventcontact1number);
+								eventValues.put("contact_number_2", eventcontact2number);
+								eventValues.put("alias", eventalias);
+								eventValues.put("created_on", eventcreatedon);
+								long newID = localDB.insert("event", null, eventValues);
+								Integer ID = (int)newID;
+								Log.v("eventaddedID", ID.toString());
+							}
+							MainActivity.this.syncClubs(newClubs);
+						}
+						catch (JSONException e)
+						{
+							e.printStackTrace();
+						}
 					}
-					Log.v("success", "volley success finally!");
-					JSONArray jsonArray=jObj.getJSONArray("events");
-					for(int i=0;i<jsonArray.length();i++)
-					{
-						JSONObject jsonObject=jsonArray.getJSONObject(i);
-						Event e=new Event();
-						e.setId(Integer.valueOf(jsonObject.getString("id")));
-						e.setEventName(jsonObject.getString("name"));
-						e.setEventVenue(jsonObject.getString("venue"));
-						e.setEventTime(jsonObject.getString("date"));
-						Log.v("eventworking", "event loop working ");
-
-						String eventname = jsonObject.getString("name");
-						String eventvenue = jsonObject.getString("venue");
-						String eventtype = jsonObject.getString("type");
-						String eventsubtype = jsonObject.getString("subtype");
-						String eventclub = jsonObject.getString("club");
-						String eventcontact1name = jsonObject.getString("contact_name_1");
-						String eventcontact2name = jsonObject.getString("contact_name_2");
-						String eventcontact1number = jsonObject.getString("contact_number_1");
-						String eventcontact2number = jsonObject.getString("contact_number_2");
-						Integer eventIDint = jsonObject.getInt("id");
-						String eventalias = jsonObject.getString("alias");
-						Integer eventClubID = jsonObject.getInt("clubid");
-						//String eventdatestr = jsonObject.getString("date");
-						String datetime=jsonObject.getString("date");
-						String[] arr=datetime.split("T");
-						String eventdatetime = arr[0]+" "+arr[1];
-						datetime = jsonObject.getString("created_on");
-						arr=datetime.split("T");
-						String eventcreatedon = arr[0]+" "+arr[1];
-
-						Log.v("eventdetails", eventname + eventvenue + eventtype + eventsubtype + eventclub + eventcontact1name + eventcontact2name + eventcontact1number + eventcontact2number + eventIDint + " " + eventalias + " " + eventdatetime + " " + eventcreatedon + " " + eventClubID.toString());
-
-						ContentValues eventvalues = new ContentValues();
-						eventvalues.put("id", eventIDint);
-						eventvalues.put("name", eventname);
-						eventvalues.put("type", eventtype);
-						eventvalues.put("subtype", eventsubtype);
-						eventvalues.put("venue", eventvenue);
-						eventvalues.put("club_id", eventClubID);
-						eventvalues.put("date_time", eventdatetime);
-						eventvalues.put("contact_name_1", eventcontact1name);
-						eventvalues.put("contact_name_2", eventcontact2name);
-						eventvalues.put("contact_number_1", eventcontact1number);
-						eventvalues.put("contact_number_2", eventcontact2number);
-						eventvalues.put("alias", eventalias);
-						eventvalues.put("created_on", eventcreatedon);
-						long newID = localDB.insert("event", null, eventvalues);
-						Integer ID = (int)newID;
-						Log.v("eventaddedID", ID.toString());
-					}
-				}
-				catch (JSONException e)
+				},
+				new Response.ErrorListener()
 				{
-					e.printStackTrace();
-				}
-			}
-		}, new Response.ErrorListener()
+					@Override
+					public void onErrorResponse(VolleyError error)
+					{
+						Log.v("error", "error response volley");
+					}
+				})
 		{
-
-			@Override
-			public void onErrorResponse(VolleyError error)
-			{
-				Log.v("error", "error response volley");
-			}
-		}) {
 			@Override
 			protected Map<String, String> getParams()
 			{
 				// Posting params to register url
 				Map<String, String> params = new HashMap<>();
-				Log.v("map", "Map created");
 				params.put("latest_event", latestEvent);
 				return params;
 			}
@@ -241,6 +250,75 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		c.close();
 
 		return list;
+	}
+
+	private void syncClubs(ArrayList<Integer> newClubs)
+	{
+		final JSONObject jObj = new JSONObject();
+		try
+		{
+			JSONArray jArray = new JSONArray();
+			for(Integer clubID : newClubs)
+			{
+				jArray.put((int)clubID);
+			}
+			jObj.put("newclubs", jArray);
+			Log.v("newclub", jObj.toString());
+
+			StringRequest req = new StringRequest(Request.Method.POST, URL.syncclubs,
+					new Response.Listener<String>()
+					{
+						@Override
+						public void onResponse(String response)
+						{
+							//Log.v("syncclubs", response);
+							try
+							{
+								JSONObject jObj = new JSONObject(response);
+								JSONArray jArray = jObj.getJSONArray("newclubs");
+								int len = jArray.length();
+								for(int i=0; i<len;i++)
+								{
+									JSONObject clubObject = jArray.getJSONObject(i);
+									ContentValues clubValues = new ContentValues();
+									clubValues.put("id", clubObject.getInt("id"));
+									clubValues.put("name", clubObject.getString("name"));
+									clubValues.put("alias", clubObject.getString("alias"));
+									localDB.insert("club", null, clubValues);
+								}
+							}
+							catch (JSONException e)
+							{
+								e.printStackTrace();
+							}
+						}
+					},
+					new Response.ErrorListener()
+					{
+						@Override
+						public void onErrorResponse(VolleyError error)
+						{
+							Log.v("error", "error response volley");
+						}
+					})
+			{
+				@Override
+				protected Map<String, String> getParams()
+				{
+					// Posting params to register url
+					Map<String, String> params = new HashMap<>();
+					params.put("newclubsjson", jObj.toString());
+					return params;
+				}
+			};
+
+			final String REQUEST_TAG = "syncClubsRequest";
+			AppController.getInstance().addToRequestQueue(req, REQUEST_TAG);
+		}
+		catch(JSONException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	private String getLatestEventTimestamp()
@@ -277,6 +355,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			}
 		}
 		c.close();
+		latestEvent = "1970-01-01 00:00:00";
 
 		return latestEvent;
 	}

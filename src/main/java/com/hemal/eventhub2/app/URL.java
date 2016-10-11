@@ -15,5 +15,6 @@ public class URL
 	public static final String geteventfuture=baseUrl+"geteventu/";
 	public static final String registerGoogleSignIn=baseUrl+"register_google/";
 	public static final String registerFCMToken=baseUrl+"register_fcm/";
-	public static final String syncdb=baseUrl+"syncdb/";
+	public static final String syncevents=baseUrl+"syncevents/";
+	public static final String syncclubs=baseUrl+"syncclubs/";
 }
