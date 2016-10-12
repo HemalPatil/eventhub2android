@@ -38,6 +38,7 @@ import com.hemal.eventhub2.helper.network.ConnectionDetector;
 import com.hemal.eventhub2.helper.network.ServerUtilities;
 import com.hemal.eventhub2.model.Club;
 import com.hemal.eventhub2.model.Event;
+import com.hemal.eventhub2.util.CustomEventsFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -60,9 +61,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	private ListView clubsListView;
 	private ArrayAdapter<Club> clubAdapter;
 	private ArrayList<Club> allClubs;
-	private TodayFragment todayFragment;
 	private ProfileFragment profileFragment;
-	private UpComingFragment upComingFragment;
+	private CustomEventsFragment todayFragment;
+	private CustomEventsFragment upComingFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -124,9 +125,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		cd = new ConnectionDetector(getApplicationContext());
 
 		// Create and add the fragments to the Events layout
-		todayFragment = new TodayFragment();
 		profileFragment = new ProfileFragment();
-		upComingFragment = new UpComingFragment();
+		todayFragment = new CustomEventsFragment(R.layout.today_fragment, R.id.todayRefreshLayout, R.id.todayEventList, R.id.noEventsToday, R.id.todayRefreshButton, "today")
+		{
+			@Override
+			protected Cursor getCursor()
+			{
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				String currentDate = sdf.format(new Date());
+				String night[]={currentDate +" 00:00:00", currentDate + " 23:59:59"};
+				// TODO : to be only used for testing purposes
+				//Cursor cr = localDB.rawQuery("SELECT * FROM event ORDER BY date_time", null);
+				Cursor cr = localDB.rawQuery("SELECT * FROM event WHERE date_time>'" + night[0] + "' AND date_time<'" + night[1] + "' ORDER BY date_time", null);
+				return cr;
+			}
+		};
+		upComingFragment = new CustomEventsFragment(R.layout.upcoming_fragment, R.id.upcomingRefreshLayout, R.id.upcomingEventList, R.id.noEventsUpcoming, R.id.upcomingRefreshButton, "upcoming")
+		{
+			@Override
+			protected Cursor getCursor()
+			{
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				String currentDate = sdf.format(new Date());
+				// TODO : to be only used for testing purposes
+				//Cursor cr = localDB.rawQuery("SELECT * FROM event ORDER BY date_time", null);
+				Cursor cr = localDB.rawQuery("SELECT * FROM event WHERE date_time>'" + currentDate + " 23:59:59" + "' ORDER BY date_time", null);
+				return cr;
+			}
+		};
 		mPager = (ViewPager) findViewById(R.id.eventsPager);
 		mPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
 		mPager.setCurrentItem(1);
@@ -507,7 +533,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		}
 	}
 
-	// TODO : see if this can be move to ServerUtilities
+	// TODO : see if this can be moved to ServerUtilities
 	private class registerFCM extends AsyncTask<Void, Void, Boolean>
 	{
 		@Override

@@ -1,13 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
 
-    <ListView
-        android:id="@+id/listUpcoming"
-        android:layout_width="fill_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:dividerHeight="4dp"
-        android:divider="#e2e2e2"
-        android:listSelector="@drawable/list_row_selector" />
+        android:layout_gravity="center"
+        android:id="@+id/noEventsUpcoming"
+        android:layout_marginTop="40dp"
+        android:textSize="24sp"
+        android:text="@string/noEventsUpcoming"
+        android:visibility="visible"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/refresh"
+        android:layout_marginTop="20dp"
+        android:id="@+id/upcomingRefreshButton"
+        android:visibility="visible"/>
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/upcomingRefreshLayout"
+        android:visibility="gone">
+
+        <ListView
+            android:id="@+id/upcomingEventList"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:dividerHeight="4dp"
+            android:divider="#e2e2e2"
+            android:listSelector="@drawable/list_row_selector" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 </LinearLayout>
