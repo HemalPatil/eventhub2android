@@ -13,6 +13,7 @@
 
     <string name="noEventsToday">No Events for Today :(</string>
     <string name="noEventsUpcoming">No Upcoming Events :(</string>
+    <string name="noEventsMy">You have not followed any Event or Club</string>
 
     <string name="refresh">Refresh</string>
     <string name="follow">Follow</string>

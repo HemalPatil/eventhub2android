@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	private ListView clubsListView;
 	private ArrayAdapter<Club> clubAdapter;
 	private ArrayList<Club> allClubs;
-	private ProfileFragment profileFragment;
+	private CustomEventsFragment profileFragment;
 	private CustomEventsFragment todayFragment;
 	private CustomEventsFragment upComingFragment;
 
@@ -124,8 +124,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		cd = new ConnectionDetector(getApplicationContext());
 
 		// Create and add the fragments to the Events layout
-		// TODO : change profile fragment and its corresponding layout to custom fragment
-		profileFragment = new ProfileFragment();
+		profileFragment = new CustomEventsFragment(R.layout.myevents_fragment, R.id.myEventsRefreshLayout, R.id.myEventList, R.id.noEventsMy, R.id.myEventsRefreshButton, "my")
+		{
+			@Override
+			protected Cursor getCursor()
+			{
+				Cursor cr = fragmentDB.rawQuery("SELECT event.* FROM followed_events LEFT JOIN event ON followed_events.id=event.id", null);
+				return cr;
+			}
+		};
 		todayFragment = new CustomEventsFragment(R.layout.today_fragment, R.id.todayRefreshLayout, R.id.todayEventList, R.id.noEventsToday, R.id.todayRefreshButton, "today")
 		{
 			@Override
@@ -134,9 +141,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 				String currentDate = sdf.format(new Date());
 				String night[]={currentDate +" 00:00:00", currentDate + " 23:59:59"};
-				// TODO : to be only used for testing purposes
-				//Cursor cr = localDB.rawQuery("SELECT * FROM event ORDER BY date_time", null);
-				Cursor cr = localDB.rawQuery("SELECT * FROM event WHERE date_time>'" + night[0] + "' AND date_time<'" + night[1] + "' ORDER BY date_time", null);
+				//Cursor cr = fragmentDB.rawQuery("SELECT * FROM event ORDER BY date_time", null);
+				Cursor cr = fragmentDB.rawQuery("SELECT * FROM event WHERE date_time>'" + night[0] + "' AND date_time<'" + night[1] + "' ORDER BY date_time", null);
 				return cr;
 			}
 		};
@@ -147,9 +153,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			{
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 				String currentDate = sdf.format(new Date());
-				// TODO : to be only used for testing purposes
-				//Cursor cr = localDB.rawQuery("SELECT * FROM event ORDER BY date_time", null);
-				Cursor cr = localDB.rawQuery("SELECT * FROM event WHERE date_time>'" + currentDate + " 23:59:59" + "' ORDER BY date_time", null);
+				//Cursor cr = fragmentDB.rawQuery("SELECT * FROM event ORDER BY date_time", null);
+				Cursor cr = fragmentDB.rawQuery("SELECT * FROM event WHERE date_time>'" + currentDate + " 23:59:59" + "' ORDER BY date_time", null);
 				return cr;
 			}
 		};
@@ -264,9 +269,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 								Log.v("eventaddedID", ID.toString());
 							}
 
+							// If received new events from server, ask the fragments to update themselves
 							if(len > 0)
 							{
+								profileFragment.addEventsToFragment();
 								todayFragment.addEventsToFragment();
+								upComingFragment.addEventsToFragment();
 							}
 
 							// No need to request the server for new clubs if there is no new club to be added
@@ -288,9 +296,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 					{
 						Log.v("error", "error response volley");
 						Toast.makeText(MainActivity.this, R.string.slowInternet, Toast.LENGTH_SHORT).show();
+						if(profileFragment.isRefreshing())
+						{
+							profileFragment.setRefreshing(false);
+						}
 						if(todayFragment.isRefreshing())
 						{
 							todayFragment.setRefreshing(false);
+						}
+						if(upComingFragment.isRefreshing())
+						{
+							upComingFragment.setRefreshing(false);
 						}
 					}
 				})

@@ -21,16 +21,20 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	@Override
 	public void onCreate(SQLiteDatabase db)
 	{
-		// TODO : add new tables to database
 		db.execSQL("CREATE TABLE IF NOT EXISTS club (id integer NOT NULL PRIMARY KEY AUTOINCREMENT, name varchar(128) NOT NULL, alias varchar(128) NOT NULL);");
 		db.execSQL("CREATE TABLE IF NOT EXISTS event (id integer NOT NULL PRIMARY KEY AUTOINCREMENT, type varchar(128) NOT NULL, subtype varchar(128) NOT NULL, name varchar(128) NOT NULL UNIQUE, date_time datetime NOT NULL, contact_name_1 varchar(128) NOT NULL, contact_number_1 varchar(10) NOT NULL, contact_name_2 varchar(128) NOT NULL, contact_number_2 varchar(10) NOT NULL, venue varchar(128) NOT NULL, alias varchar(128) NOT NULL UNIQUE, club_id integer NULL REFERENCES club (id), created_on timestamp not null);");
-		db.execSQL("CREATE");
+		db.execSQL("CREATE TABLE IF NOT EXISTS followed_events (id integer NOT NULL REFERENCES event(id));");
+		db.execSQL("CREATE TABLE IF NOT EXISTS followed_clubs (id integer NOT NULL REFERENCES club(id));");
 		Log.v("database", "create database called");
 	}
 
 	@Override
 	public void onOpen(SQLiteDatabase db)
 	{
+		db.execSQL("CREATE TABLE IF NOT EXISTS club (id integer NOT NULL PRIMARY KEY AUTOINCREMENT, name varchar(128) NOT NULL, alias varchar(128) NOT NULL);");
+		db.execSQL("CREATE TABLE IF NOT EXISTS event (id integer NOT NULL PRIMARY KEY AUTOINCREMENT, type varchar(128) NOT NULL, subtype varchar(128) NOT NULL, name varchar(128) NOT NULL UNIQUE, date_time datetime NOT NULL, contact_name_1 varchar(128) NOT NULL, contact_number_1 varchar(10) NOT NULL, contact_name_2 varchar(128) NOT NULL, contact_number_2 varchar(10) NOT NULL, venue varchar(128) NOT NULL, alias varchar(128) NOT NULL UNIQUE, club_id integer NULL REFERENCES club (id), created_on timestamp not null);");
+		db.execSQL("CREATE TABLE IF NOT EXISTS followed_events (id integer NOT NULL REFERENCES event(id));");
+		db.execSQL("CREATE TABLE IF NOT EXISTS followed_clubs (id integer NOT NULL REFERENCES club(id));");
 		Log.v("database", "open database called");
 	}
 

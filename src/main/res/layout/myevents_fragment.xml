@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:id="@+id/noEventsMy"
+        android:layout_marginTop="40dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:textSize="24sp"
+        android:text="@string/noEventsMy"
+        android:visibility="visible"
+        android:gravity="center"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/refresh"
+        android:layout_marginTop="20dp"
+        android:id="@+id/myEventsRefreshButton"
+        android:visibility="visible"/>
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/myEventsRefreshLayout"
+        android:visibility="gone">
+
+        <ListView
+            android:id="@+id/myEventList"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:dividerHeight="4dp"
+            android:divider="#e2e2e2"
+            android:listSelector="@drawable/list_row_selector" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+</LinearLayout>
