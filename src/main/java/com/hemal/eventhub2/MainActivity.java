@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -59,6 +60,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	private ListView clubsListView;
 	private ArrayAdapter<Club> clubAdapter;
 	private ArrayList<Club> allClubs;
+	private TodayFragment todayFragment;
+	private ProfileFragment profileFragment;
+	private UpComingFragment upComingFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -118,17 +122,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		allClubs = getAllClubs();
 
 		cd = new ConnectionDetector(getApplicationContext());
-		if(cd.isConnectedToInternet() && UserDetails.email != null)
-		{
-			// some times due to race conditions mobile_id (fcmToken) in db of our backend remains blank
-			// make sure that this token is present in the db, if not present, send the token from here
-			// the fcm token also needs to be updated if the token was refreshed but could not be updated at the backend
-			// the app always has the recent token stored in its shared preferences
-			testAndSetFCMToken();
-			syncDatabase();
-		}
 
 		// Create and add the fragments to the Events layout
+		todayFragment = new TodayFragment();
+		profileFragment = new ProfileFragment();
+		upComingFragment = new UpComingFragment();
 		mPager = (ViewPager) findViewById(R.id.eventsPager);
 		mPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
 		mPager.setCurrentItem(1);
@@ -143,6 +141,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		clubsListView = (ListView) findViewById(R.id.clubsList);
 		clubAdapter = new ArrayAdapter<>(this, R.layout.club_row, R.id.clubName, allClubs);
 		clubsListView.setAdapter(clubAdapter);
+
+		if(cd.isConnectedToInternet() && UserDetails.email != null)
+		{
+			// some times due to race conditions mobile_id (fcmToken) in db of our backend remains blank
+			// make sure that this token is present in the db, if not present, send the token from here
+			// the fcm token also needs to be updated if the token was refreshed but could not be updated at the backend
+			// the app always has the recent token stored in its shared preferences
+			testAndSetFCMToken();
+			syncDatabase();
+		}
     }
 
 	private void testAndSetFCMToken()
@@ -150,10 +158,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		new registerFCM().execute();
 	}
 
-	private void syncDatabase()
+	public void syncDatabase()
 	{
 		Log.v("syncdb", "syncing database");
-		final String latestEvent = getLatestEventTimestamp();
+		final String latestEvent = getLatestAddedEventTimestamp();
 		final ArrayList<Integer> existingClubs = new ArrayList<>();
 		for(Club c : allClubs)
 		{
@@ -235,6 +243,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 								Log.v("eventaddedID", ID.toString());
 							}
 
+							if(len > 0)
+							{
+								todayFragment.addEventsToFragment();
+							}
+
 							// No need to request the server for new clubs if there is no new club to be added
 							if(newClubs.size() > 0)
 							{
@@ -253,6 +266,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 					public void onErrorResponse(VolleyError error)
 					{
 						Log.v("error", "error response volley");
+						Toast.makeText(MainActivity.this, R.string.slowInternet, Toast.LENGTH_SHORT).show();
+						if(todayFragment.isRefreshing())
+						{
+							todayFragment.setRefreshing(false);
+						}
 					}
 				})
 		{
@@ -367,21 +385,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		}
 	}
 
-	private String getLatestEventTimestamp()
+	private String getLatestAddedEventTimestamp()
 	{
-		String latestEvent = null;
+		String latestAddedEvent = null;
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date today = new Date();
 
 		Cursor c =localDB.rawQuery("SELECT MAX(created_on) as maxdate FROM event", null);
 		if(c!=null && c.moveToFirst())
 		{
-			latestEvent = c.getString(c.getColumnIndex("maxdate"));
+			latestAddedEvent = c.getString(c.getColumnIndex("maxdate"));
 		}
-		if(latestEvent == null)
+		if(latestAddedEvent == null)
 		{
 			// no event present in the database
-			latestEvent = df.format(today);
+			latestAddedEvent = df.format(today);
 		}
 		else
 		{
@@ -389,7 +407,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			Date latestEventDate;
 			try
 			{
-				latestEventDate = df.parse(latestEvent);
+				latestEventDate = df.parse(latestAddedEvent);
 			}
 			catch (ParseException e)
 			{
@@ -397,14 +415,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			}
 			if(latestEventDate.before(today))
 			{
-				latestEvent = df.format(today);
+				latestAddedEvent = df.format(today);
 			}
 		}
 		c.close();
 		// TODO : remove this for production code, only for testing purposes
-		latestEvent = "1970-01-01 00:00:00";
+		latestAddedEvent = "1970-01-01 00:00:00";
 
-		return latestEvent;
+		return latestAddedEvent;
 	}
 
     @Override
@@ -442,7 +460,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 		else if (id == R.id.nav_signout)
 		{
-
+			// TODO : add a sign-out activity
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -467,11 +485,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			switch (index)
 			{
 				case 0:
-					return new ProfileFragment();
+					return profileFragment;
 				case 1:
-					return new TodayFragment();
+					return todayFragment;
 				case 2:
-					return new UpComingFragment();
+					return upComingFragment;
 			}
 			return null;
 		}
@@ -489,6 +507,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		}
 	}
 
+	// TODO : see if this can be move to ServerUtilities
 	private class registerFCM extends AsyncTask<Void, Void, Boolean>
 	{
 		@Override

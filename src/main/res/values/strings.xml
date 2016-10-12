@@ -17,6 +17,9 @@
     <string name="refresh">Refresh</string>
     <string name="follow">Follow</string>
 
+    <string name="noInternet">No Internet Connection!</string>
+    <string name="slowInternet">Can\'t get new events. Network is too slow!</string>
+
     <!-- Button text -->
     <string name="btn_logout_from_google">Logout from Google</string>
     <string name="btn_revoke_access">Revoke Access</string>

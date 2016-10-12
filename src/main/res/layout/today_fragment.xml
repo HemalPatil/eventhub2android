@@ -13,13 +13,22 @@
         android:layout_marginTop="40dp"
         android:textSize="24sp"
         android:text="@string/noEventsToday"
-        android:visibility="gone"/>
+        android:visibility="visible" />
 
-    <ListView
-        android:id="@+id/todayEventList"
-        android:layout_width="fill_parent"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:dividerHeight="4dp"
-        android:divider="#e2e2e2"
-        android:listSelector="@drawable/list_row_selector" />
+        android:id="@+id/todayRefreshLayout"
+        android:visibility="gone">
+
+        <ListView
+            android:id="@+id/todayEventList"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:dividerHeight="4dp"
+            android:divider="#e2e2e2"
+            android:listSelector="@drawable/list_row_selector" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 </LinearLayout>
