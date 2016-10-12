@@ -192,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	public void syncDatabase()
 	{
 		Log.v("syncdb", "syncing database");
-		final String latestEvent = getLatestAddedEventTimestamp();
+		final String latestCreatedOn = getLatestCreatedOnEventTimestamp();
 		final ArrayList<Integer> existingClubs = new ArrayList<>();
 		for(Club c : allClubs)
 		{
@@ -276,6 +276,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 								todayFragment.addEventsToFragment();
 								upComingFragment.addEventsToFragment();
 							}
+							else
+							{
+								Toast.makeText(MainActivity.this, R.string.noNewEvents, Toast.LENGTH_SHORT).show();
+								if(profileFragment.isRefreshing())
+								{
+									profileFragment.setRefreshing(false);
+								}
+								if(todayFragment.isRefreshing())
+								{
+									todayFragment.setRefreshing(false);
+								}
+								if(upComingFragment.isRefreshing())
+								{
+									upComingFragment.setRefreshing(false);
+								}
+							}
 
 							// No need to request the server for new clubs if there is no new club to be added
 							if(newClubs.size() > 0)
@@ -316,7 +332,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			{
 				// Posting params to register url
 				Map<String, String> params = new HashMap<>();
-				params.put("latest_event", latestEvent);
+				params.put("latest_created_on", latestCreatedOn);
 				return params;
 			}
 		};
@@ -385,7 +401,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 									allClubs.add(nc);
 									localDB.insert("club", null, clubValues);
 								}
-								// TODO : test this after swipe refresh implemented
 								clubAdapter.notifyDataSetChanged();
 							}
 							catch (JSONException e)
@@ -422,44 +437,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		}
 	}
 
-	private String getLatestAddedEventTimestamp()
+	private String getLatestCreatedOnEventTimestamp()
 	{
-		String latestAddedEvent = null;
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date today = new Date();
+		String latestCreatedOnEvent = null;
 
 		Cursor c =localDB.rawQuery("SELECT MAX(created_on) as maxdate FROM event", null);
 		if(c!=null && c.moveToFirst())
 		{
-			latestAddedEvent = c.getString(c.getColumnIndex("maxdate"));
-		}
-		if(latestAddedEvent == null)
-		{
-			// no event present in the database
-			latestAddedEvent = df.format(today);
-		}
-		else
-		{
-			// fetch events only after today if latest event is before today
-			Date latestEventDate;
-			try
-			{
-				latestEventDate = df.parse(latestAddedEvent);
-			}
-			catch (ParseException e)
-			{
-				latestEventDate = today;
-			}
-			if(latestEventDate.before(today))
-			{
-				latestAddedEvent = df.format(today);
-			}
+			latestCreatedOnEvent = c.getString(c.getColumnIndex("maxdate"));
 		}
 		c.close();
-		// TODO : remove this for production code, only for testing purposes
-		latestAddedEvent = "1970-01-01 00:00:00";
+		if(latestCreatedOnEvent == null || latestCreatedOnEvent.isEmpty())
+		{
+			// no events in the database
+			latestCreatedOnEvent = "1980-01-01 00:00:00";
+		}
 
-		return latestAddedEvent;
+		return latestCreatedOnEvent;
 	}
 
     @Override

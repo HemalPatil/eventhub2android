@@ -169,6 +169,10 @@ public abstract class CustomEventsFragment extends Fragment
 		else
 		{
 			Toast.makeText(getActivity(), R.string.noInternet, Toast.LENGTH_SHORT).show();
+			if(refreshLayout.isRefreshing())
+			{
+				refreshLayout.setRefreshing(false);
+			}
 		}
 	}
 }
