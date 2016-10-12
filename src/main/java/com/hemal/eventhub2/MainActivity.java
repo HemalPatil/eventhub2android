@@ -32,13 +32,13 @@ import com.android.volley.toolbox.StringRequest;
 import com.hemal.eventhub2.app.AppController;
 import com.hemal.eventhub2.app.URL;
 import com.hemal.eventhub2.app.UserDetails;
+import com.hemal.eventhub2.CustomEventsFragment;
 import com.hemal.eventhub2.helper.DatabaseHelper;
 import com.hemal.eventhub2.helper.SlidingTabLayout;
 import com.hemal.eventhub2.helper.network.ConnectionDetector;
 import com.hemal.eventhub2.helper.network.ServerUtilities;
 import com.hemal.eventhub2.model.Club;
 import com.hemal.eventhub2.model.Event;
-import com.hemal.eventhub2.util.CustomEventsFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -125,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		cd = new ConnectionDetector(getApplicationContext());
 
 		// Create and add the fragments to the Events layout
+		// TODO : change profile fragment and its corresponding layout to custom fragment
 		profileFragment = new ProfileFragment();
 		todayFragment = new CustomEventsFragment(R.layout.today_fragment, R.id.todayRefreshLayout, R.id.todayEventList, R.id.noEventsToday, R.id.todayRefreshButton, "today")
 		{
