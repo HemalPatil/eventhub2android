@@ -16,9 +16,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.hemal.eventhub2.LoginActivity;
-import com.hemal.eventhub2.MainActivity;
-import com.hemal.eventhub2.R;
 import com.hemal.eventhub2.adapters.CustomEventListAdapter;
 import com.hemal.eventhub2.helper.DatabaseHelper;
 import com.hemal.eventhub2.helper.network.ConnectionDetector;
@@ -63,6 +60,7 @@ public abstract class CustomEventsFragment extends Fragment
 		listView = (ListView) rootView.findViewById(listViewID);
 		noEvents = (TextView) rootView.findViewById(noEventsID);
 		refreshButton = (Button) rootView.findViewById(refreshButtonID);
+		cd = new ConnectionDetector(getActivity());
 
 		refreshLayout.setVisibility(View.GONE);
 		noEvents.setVisibility(View.VISIBLE);
@@ -74,20 +72,20 @@ public abstract class CustomEventsFragment extends Fragment
 		adapter = new CustomEventListAdapter(getActivity(), eventList, FRAGMENT_TAG);
 		listView.setAdapter(adapter);
 
-		cd = new ConnectionDetector(getActivity());
+		refreshButton.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				refreshFragment();
+			}
+		});
 		refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()
 		{
 			@Override
 			public void onRefresh()
 			{
-				if(cd.isConnectedToInternet())
-				{
-					((MainActivity)getActivity()).syncDatabase();
-				}
-				else
-				{
-					Toast.makeText(getActivity(), R.string.noInternet, Toast.LENGTH_SHORT).show();
-				}
+				refreshFragment();
 			}
 		});
 
@@ -158,6 +156,19 @@ public abstract class CustomEventsFragment extends Fragment
 			refreshLayout.setVisibility(View.GONE);
 			noEvents.setVisibility(View.VISIBLE);
 			refreshButton.setVisibility(View.VISIBLE);
+		}
+	}
+
+	private void refreshFragment()
+	{
+		if(cd.isConnectedToInternet())
+		{
+			Toast.makeText(getActivity(), R.string.refreshing, Toast.LENGTH_SHORT).show();
+			((MainActivity)getActivity()).syncDatabase();
+		}
+		else
+		{
+			Toast.makeText(getActivity(), R.string.noInternet, Toast.LENGTH_SHORT).show();
 		}
 	}
 }

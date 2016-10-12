@@ -19,6 +19,7 @@
 
     <string name="noInternet">No Internet Connection!</string>
     <string name="slowInternet">Can\'t get new events. Network is too slow!</string>
+    <string name="refreshing">Getting events</string>
 
     <!-- Button text -->
     <string name="btn_logout_from_google">Logout from Google</string>

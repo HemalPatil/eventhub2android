@@ -32,7 +32,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.hemal.eventhub2.app.AppController;
 import com.hemal.eventhub2.app.URL;
 import com.hemal.eventhub2.app.UserDetails;
-import com.hemal.eventhub2.CustomEventsFragment;
 import com.hemal.eventhub2.helper.DatabaseHelper;
 import com.hemal.eventhub2.helper.SlidingTabLayout;
 import com.hemal.eventhub2.helper.network.ConnectionDetector;
@@ -195,9 +194,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			existingClubs.add(c.clubID);
 		}
 
-		StringRequest strReq = new StringRequest(Request.Method.POST, URL.syncevents,
+		StringRequest strReq = new StringRequest(Request.Method.POST, URL.syncEvents,
 				new Response.Listener<String>()
 				{
+					// TODO : remove redundant code
 					@Override
 					public void onResponse(String response)
 					{
@@ -206,17 +206,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 						try
 						{
 							JSONObject jObj = new JSONObject(response);
-							if(jObj==null)
-							{
-								Log.v("jsonerror", "json response is null not standard error");
-								return;
-							}
 							Log.v("success", "volley success finally!");
 							JSONArray jsonArray=jObj.getJSONArray("events");
 							int len = jsonArray.length();
 							for(int i=0;i<len;i++)
 							{
-								// TODO : remove redundant code
 								JSONObject jsonObject=jsonArray.getJSONObject(i);
 								Event e=new Event();
 								e.setId(Integer.valueOf(jsonObject.getString("id")));
@@ -350,7 +344,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			jObj.put("newclubs", jArray);
 			Log.v("newclub", jObj.toString());
 
-			StringRequest req = new StringRequest(Request.Method.POST, URL.syncclubs,
+			StringRequest req = new StringRequest(Request.Method.POST, URL.syncClubs,
 					new Response.Listener<String>()
 					{
 						@Override
