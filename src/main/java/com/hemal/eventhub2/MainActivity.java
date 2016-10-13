@@ -127,35 +127,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		profileFragment = new CustomEventsFragment(R.layout.myevents_fragment, R.id.myEventsRefreshLayout, R.id.myEventList, R.id.noEventsMy, R.id.myEventsRefreshButton, "my")
 		{
 			@Override
-			protected Cursor getCursor()
+			protected ArrayList<Event> getEvents()
 			{
-				Cursor cr = fragmentDB.rawQuery("SELECT event.* FROM followed_events LEFT JOIN event ON followed_events.id=event.id", null);
-				return cr;
+				ArrayList<Event> list = new ArrayList<>();
+				Cursor cr = fragmentDB.rawQuery("SELECT event.* FROM followed_events LEFT JOIN event ON followed_events.id=event.id ORDER BY event.date_time", null);
+				addEventsFromCursor(cr, list);
+				cr = fragmentDB.rawQuery("SELECT event.* FROM followed_clubs LEFT JOIN event ON followed_clubs.id=event.club_id ORDER BY event.date_time", null);
+				addEventsFromCursor(cr, list);
+				return list;
 			}
 		};
 		todayFragment = new CustomEventsFragment(R.layout.today_fragment, R.id.todayRefreshLayout, R.id.todayEventList, R.id.noEventsToday, R.id.todayRefreshButton, "today")
 		{
 			@Override
-			protected Cursor getCursor()
+			protected ArrayList<Event> getEvents()
 			{
+				ArrayList<Event> list = new ArrayList<>();
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 				String currentDate = sdf.format(new Date());
 				String night[]={currentDate +" 00:00:00", currentDate + " 23:59:59"};
 				//Cursor cr = fragmentDB.rawQuery("SELECT * FROM event ORDER BY date_time", null);
 				Cursor cr = fragmentDB.rawQuery("SELECT * FROM event WHERE date_time>'" + night[0] + "' AND date_time<'" + night[1] + "' ORDER BY date_time", null);
-				return cr;
+				addEventsFromCursor(cr, list);
+				return list;
 			}
 		};
 		upComingFragment = new CustomEventsFragment(R.layout.upcoming_fragment, R.id.upcomingRefreshLayout, R.id.upcomingEventList, R.id.noEventsUpcoming, R.id.upcomingRefreshButton, "upcoming")
 		{
 			@Override
-			protected Cursor getCursor()
+			protected ArrayList<Event> getEvents()
 			{
+				ArrayList<Event> list = new ArrayList<>();
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 				String currentDate = sdf.format(new Date());
 				//Cursor cr = fragmentDB.rawQuery("SELECT * FROM event ORDER BY date_time", null);
 				Cursor cr = fragmentDB.rawQuery("SELECT * FROM event WHERE date_time>'" + currentDate + " 23:59:59" + "' ORDER BY date_time", null);
-				return cr;
+				addEventsFromCursor(cr, list);
+				return list;
 			}
 		};
 		mPager = (ViewPager) findViewById(R.id.eventsPager);

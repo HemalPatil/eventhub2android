@@ -44,6 +44,7 @@ public class Event {
 	{
 		this.eventName=name;
 	}
+
 	public String getEventTime()
 	{
 		return eventTime;
@@ -53,6 +54,7 @@ public class Event {
 	{
 		this.eventTime=time;
 	}
+
 	public String getEventVenue()
 	{
 		return eventVenue;

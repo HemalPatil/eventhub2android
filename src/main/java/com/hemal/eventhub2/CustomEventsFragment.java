@@ -121,11 +121,24 @@ public abstract class CustomEventsFragment extends Fragment
 		refreshLayout.setRefreshing(refreshing);
 	}
 
-	protected abstract Cursor getCursor();
+	protected void addEventsFromCursor(Cursor cr, ArrayList<Event> list)
+	{
+		while(cr.moveToNext())
+		{
+			Event e = new Event();
+			e.setId(Integer.valueOf(cr.getString(cr.getColumnIndex("id"))));
+			e.setEventName(cr.getString(cr.getColumnIndex("name")));
+			e.setEventVenue(cr.getString(cr.getColumnIndex("venue")));
+			e.setEventTime(cr.getString(cr.getColumnIndex("date_time")));
+			list.add(e);
+		}
+	}
+
+	protected abstract ArrayList<Event> getEvents();
 
 	public void addEventsToFragment()
 	{
-		Cursor c = getCursor();
+		/*Cursor c = getCursor();
 
 		eventList.clear();
 		while(c.moveToNext())
@@ -136,6 +149,20 @@ public abstract class CustomEventsFragment extends Fragment
 			e.setEventVenue(c.getString(c.getColumnIndex("venue")));
 			String DBDate = c.getString(c.getColumnIndex("date_time"));
 			e.setEventTime(DBDate);
+			eventList.add(e);
+			Log.v("event" + FRAGMENT_TAG, e.getEventName());
+		}*/
+
+		ArrayList<Event> newList = getEvents();
+		eventList.clear();
+		int len = newList.size();
+		for(int i=0; i<len; i++)
+		{
+			Event e = new Event();
+			e.setId(newList.get(i).getId());
+			e.setEventName(newList.get(i).getEventName());
+			e.setEventVenue(newList.get(i).getEventVenue());
+			e.setEventTime(newList.get(i).getEventTime());
 			eventList.add(e);
 			Log.v("event" + FRAGMENT_TAG, e.getEventName());
 		}
