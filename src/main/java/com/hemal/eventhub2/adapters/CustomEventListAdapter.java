@@ -68,7 +68,6 @@ public class CustomEventListAdapter extends BaseAdapter
 		TextView eventTime = (TextView) convertView.findViewById(R.id.eventTime);
 		TextView eventDesc = (TextView) convertView.findViewById(R.id.eventVenue);
 		ImageView icon=(ImageView)convertView.findViewById(R.id.imageIcon);
-		// getting movie data for the row
 		Event event = eventItems.get(position);
 		eventName.setText(event.getEventName());
 		eventDesc.setText(event.getEventVenue());

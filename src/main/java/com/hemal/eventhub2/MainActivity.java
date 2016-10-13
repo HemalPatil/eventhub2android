@@ -21,7 +21,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -43,14 +45,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener
 {
 	private SQLiteDatabase localDB;
 	private SlidingTabLayout mTabs;
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	private ListView clubsListView;
 	private ArrayAdapter<Club> clubAdapter;
 	private ArrayList<Club> allClubs;
-	private CustomEventsFragment profileFragment;
+	private CustomEventsFragment myEventsFragment;
 	private CustomEventsFragment todayFragment;
 	private CustomEventsFragment upComingFragment;
 
@@ -124,15 +125,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		cd = new ConnectionDetector(getApplicationContext());
 
 		// Create and add the fragments to the Events layout
-		profileFragment = new CustomEventsFragment(R.layout.myevents_fragment, R.id.myEventsRefreshLayout, R.id.myEventList, R.id.noEventsMy, R.id.myEventsRefreshButton, "my")
+		myEventsFragment = new CustomEventsFragment(R.layout.myevents_fragment, R.id.myEventsRefreshLayout, R.id.myEventList, R.id.noEventsMy, R.id.myEventsRefreshButton, "my")
 		{
 			@Override
 			protected ArrayList<Event> getEvents()
 			{
 				ArrayList<Event> list = new ArrayList<>();
-				Cursor cr = fragmentDB.rawQuery("SELECT event.* FROM followed_events LEFT JOIN event ON followed_events.id=event.id ORDER BY event.date_time", null);
-				addEventsFromCursor(cr, list);
-				cr = fragmentDB.rawQuery("SELECT event.* FROM followed_clubs LEFT JOIN event ON followed_clubs.id=event.club_id ORDER BY event.date_time", null);
+				Cursor cr = fragmentDB.rawQuery("SELECT * FROM event WHERE followed=1 ORDER BY event.date_time", null);
 				addEventsFromCursor(cr, list);
 				return list;
 			}
@@ -176,10 +175,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		mTabs.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
 		mTabs.setViewPager(mPager);
 
-		// TODO : add listener to listview item click and follow button click
 		clubsListView = (ListView) findViewById(R.id.clubsList);
 		clubAdapter = new ArrayAdapter<>(this, R.layout.club_row, R.id.clubName, allClubs);
 		clubsListView.setAdapter(clubAdapter);
+		clubsListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+		{
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+			{
+				// TODO : replace LoginActivity with AboutClubActivity
+				Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+				Club c = (Club) parent.getItemAtPosition(position);
+				intent.putExtra("clubid", c.clubID);
+				startActivity(intent);
+			}
+		});
 
 		if(cd.isConnectedToInternet() && UserDetails.email != null)
 		{
@@ -210,7 +220,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		StringRequest strReq = new StringRequest(Request.Method.POST, URL.syncEvents,
 				new Response.Listener<String>()
 				{
-					// TODO : remove redundant code
 					@Override
 					public void onResponse(String response)
 					{
@@ -219,59 +228,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 						try
 						{
 							JSONObject jObj = new JSONObject(response);
-							Log.v("success", "volley success finally!");
 							JSONArray jsonArray=jObj.getJSONArray("events");
 							int len = jsonArray.length();
 							for(int i=0;i<len;i++)
 							{
 								JSONObject jsonObject=jsonArray.getJSONObject(i);
-								Event e=new Event();
-								e.setId(Integer.valueOf(jsonObject.getString("id")));
-								e.setEventName(jsonObject.getString("name"));
-								e.setEventVenue(jsonObject.getString("venue"));
-								e.setEventTime(jsonObject.getString("date"));
-								Log.v("eventworking", "event loop working ");
-
-								String eventname = jsonObject.getString("name");
-								String eventvenue = jsonObject.getString("venue");
-								String eventtype = jsonObject.getString("type");
-								String eventsubtype = jsonObject.getString("subtype");
-								String eventclub = jsonObject.getString("club");
-								String eventcontact1name = jsonObject.getString("contact_name_1");
-								String eventcontact2name = jsonObject.getString("contact_name_2");
-								String eventcontact1number = jsonObject.getString("contact_number_1");
-								String eventcontact2number = jsonObject.getString("contact_number_2");
-								Integer eventIDint = jsonObject.getInt("id");
-								String eventalias = jsonObject.getString("alias");
-								Integer eventClubID = jsonObject.getInt("clubid");
+								int eventClubID = jsonObject.getInt("club_id");
 								if(!existingClubs.contains(eventClubID) && !newClubs.contains(eventClubID))
 								{
 									newClubs.add(eventClubID);
 								}
-								//String eventdatestr = jsonObject.getString("date");
-								String datetime=jsonObject.getString("date");
-								String[] arr=datetime.split("T");
-								String eventdatetime = arr[0]+" "+arr[1];
-								datetime = jsonObject.getString("created_on");
-								arr=datetime.split("T");
-								String eventcreatedon = arr[0]+" "+arr[1];
-
-								Log.v("eventdetails", eventname + eventvenue + eventtype + eventsubtype + eventclub + eventcontact1name + eventcontact2name + eventcontact1number + eventcontact2number + eventIDint + " " + eventalias + " " + eventdatetime + " " + eventcreatedon + " " + eventClubID.toString());
-
 								ContentValues eventValues = new ContentValues();
-								eventValues.put("id", eventIDint);
-								eventValues.put("name", eventname);
-								eventValues.put("type", eventtype);
-								eventValues.put("subtype", eventsubtype);
-								eventValues.put("venue", eventvenue);
-								eventValues.put("club_id", eventClubID);
-								eventValues.put("date_time", eventdatetime);
-								eventValues.put("contact_name_1", eventcontact1name);
-								eventValues.put("contact_name_2", eventcontact2name);
-								eventValues.put("contact_number_1", eventcontact1number);
-								eventValues.put("contact_number_2", eventcontact2number);
-								eventValues.put("alias", eventalias);
-								eventValues.put("created_on", eventcreatedon);
+								eventValues.put("id", jsonObject.getInt("id"));
+								eventValues.put("type", jsonObject.getString("type"));
+								eventValues.put("subtype", jsonObject.getString("subtype"));
+								eventValues.put("name", jsonObject.getString("name"));
+								eventValues.put("date_time", jsonObject.getString("date_time"));
+								eventValues.put("contact_name_1", jsonObject.getString("contact_name_1"));
+								eventValues.put("contact_number_1", jsonObject.getString("contact_number_1"));
+								eventValues.put("contact_name_2", jsonObject.getString("contact_name_2"));
+								eventValues.put("contact_number_2", jsonObject.getString("contact_number_2"));
+								eventValues.put("venue", jsonObject.getString("venue"));
+								eventValues.put("alias", jsonObject.getString("alias"));
+								eventValues.put("club_id", jsonObject.getInt("club_id"));
+								eventValues.put("created_on", jsonObject.getString("created_on"));
+								eventValues.put("followed", jsonObject.getInt("followed"));
 								long newID = localDB.insert("event", null, eventValues);
 								Integer ID = (int)newID;
 								Log.v("eventaddedID", ID.toString());
@@ -280,16 +261,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 							// If received new events from server, ask the fragments to update themselves
 							if(len > 0)
 							{
-								profileFragment.addEventsToFragment();
+								myEventsFragment.addEventsToFragment();
 								todayFragment.addEventsToFragment();
 								upComingFragment.addEventsToFragment();
 							}
 							else
 							{
 								Toast.makeText(MainActivity.this, R.string.noNewEvents, Toast.LENGTH_SHORT).show();
-								if(profileFragment.isRefreshing())
+								if(myEventsFragment.isRefreshing())
 								{
-									profileFragment.setRefreshing(false);
+									myEventsFragment.setRefreshing(false);
 								}
 								if(todayFragment.isRefreshing())
 								{
@@ -320,9 +301,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 					{
 						Log.v("error", "error response volley");
 						Toast.makeText(MainActivity.this, R.string.slowInternet, Toast.LENGTH_SHORT).show();
-						if(profileFragment.isRefreshing())
+						if(myEventsFragment.isRefreshing())
 						{
-							profileFragment.setRefreshing(false);
+							myEventsFragment.setRefreshing(false);
 						}
 						if(todayFragment.isRefreshing())
 						{
@@ -341,6 +322,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				// Posting params to register url
 				Map<String, String> params = new HashMap<>();
 				params.put("latest_created_on", latestCreatedOn);
+				params.put("email", UserDetails.email);
 				return params;
 			}
 		};
@@ -354,17 +336,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	{
 		ArrayList<Club> list = new ArrayList<>();
 		Cursor c = localDB.rawQuery("SELECT * FROM club", null);
-		if(c != null)
+		while(c.moveToNext())
 		{
-			while(c.moveToNext())
-			{
-				Club club = new Club();
-				club.clubID = c.getInt(c.getColumnIndex("id"));
-				club.name = c.getString(c.getColumnIndex("name"));
-				club.alias = c.getString(c.getColumnIndex("alias"));
-				Log.v("newclub", "Existing club : " + club.name);
-				list.add(club);
-			}
+			Club club = new Club();
+			club.clubID = c.getInt(c.getColumnIndex("id"));
+			club.name = c.getString(c.getColumnIndex("name"));
+			club.alias = c.getString(c.getColumnIndex("alias"));
+			club.followed = c.getInt(c.getColumnIndex("followed")) == 1;
+			Log.v("newclub", "Existing club : " + club.name);
+			list.add(club);
 		}
 		c.close();
 
@@ -400,12 +380,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 									JSONObject clubObject = jArray.getJSONObject(i);
 									ContentValues clubValues = new ContentValues();
 									Club nc = new Club();
+									int followed = clubObject.getInt("followed");
 									nc.clubID = clubObject.getInt("id");
 									nc.name = clubObject.getString("name");
 									nc.alias = clubObject.getString("alias");
+									nc.followed = followed == 1;
 									clubValues.put("id", nc.clubID);
 									clubValues.put("name", nc.name);
 									clubValues.put("alias", nc.alias);
+									clubValues.put("followed", followed);
 									allClubs.add(nc);
 									localDB.insert("club", null, clubValues);
 								}
@@ -432,6 +415,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 					// Posting params to register url
 					Map<String, String> params = new HashMap<>();
 					params.put("newclubsjson", jObj.toString());
+					params.put("email", UserDetails.email);
 					return params;
 				}
 			};
@@ -524,7 +508,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			switch (index)
 			{
 				case 0:
-					return profileFragment;
+					return myEventsFragment;
 				case 1:
 					return todayFragment;
 				case 2:
@@ -553,6 +537,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		protected Boolean doInBackground(Void... params)
 		{
 			return ServerUtilities.registerFCMToken(UserDetails.email, UserDetails.fcmToken);
+		}
+	}
+
+	@Override
+	public void onClick(View v)
+	{
+		int id = v.getId();
+		if(id == R.id.clubFollow)
+		{
+			View parentRow = (View) v.getParent().getParent();
+			final int position = clubsListView.getPositionForView(parentRow);
+			Club c = (Club) clubsListView.getItemAtPosition(position);
+			Button x = (Button) v;
+			if(v.getTag().toString() == "notfollowed")
+			{
+				localDB.execSQL("INSERT INTO followed_clubs (id) VALUES (" + c.clubID + ")");
+				// TODO : change button colours from green (followed) to theme default (unfollowed)
+				//x.setBackgroundColor(getResources().getColor(R.color.green));
+				//x.setTextColor(getResources().getColor(R.color.white));
+				x.setText(R.string.followed);
+				v.setTag("followed");
+			}
+			else
+			{
+				localDB.execSQL("DELETE FROM followed_clubs WHERE id=" + c.clubID);
+				//x.setBackgroundResource(android.R.drawable.btn_default);
+				//x.setTextColor();
+				x.setText(R.string.follow);
+				v.setTag("notfollowed");
+			}
+			myEventsFragment.addEventsToFragment();
 		}
 	}
 }

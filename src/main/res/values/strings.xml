@@ -17,6 +17,7 @@
 
     <string name="refresh">Refresh</string>
     <string name="follow">Follow</string>
+    <string name="followed">Followed</string>
 
     <string name="noInternet">No Internet Connection!</string>
     <string name="slowInternet">Can\'t get new events. Network is too slow!</string>

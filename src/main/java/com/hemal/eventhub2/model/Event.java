@@ -5,11 +5,13 @@ package com.hemal.eventhub2.model;
  */
 public class Event {
 
-	int id;
-	String eventName;
-	String eventTime;
-	String eventVenue;
-	String imagePath;
+	public int id;
+	public String eventName;
+	public String eventVenue;
+	public String imagePath;
+	public boolean followed = false;
+
+	private String eventTime;
 
 	public Event()
 	{

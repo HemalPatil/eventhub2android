@@ -29,7 +29,10 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:layout_margin="10dp"/>
+            android:layout_margin="10dp"
+            android:onClick="onClick"
+            android:focusable="false"
+            android:tag="notfollowed"/>
 
     </RelativeLayout>
 

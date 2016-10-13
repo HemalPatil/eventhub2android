@@ -8,6 +8,7 @@ public class Club
 	public Integer clubID;
 	public String name;
 	public String alias;
+	public boolean followed;
 
 	@Override
 	public String toString()
