@@ -31,6 +31,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.hemal.eventhub2.adapters.CustomClubListAdapter;
 import com.hemal.eventhub2.app.AppController;
 import com.hemal.eventhub2.app.URL;
 import com.hemal.eventhub2.app.UserDetails;
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	private ViewPager mPager;
 	private Toolbar toolbar;
 	private ListView clubsListView;
-	private ArrayAdapter<Club> clubAdapter;
+	private CustomClubListAdapter clubAdapter;
 	private ArrayList<Club> allClubs;
 	private CustomEventsFragment myEventsFragment;
 	private CustomEventsFragment todayFragment;
@@ -176,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		mTabs.setViewPager(mPager);
 
 		clubsListView = (ListView) findViewById(R.id.clubsList);
-		clubAdapter = new ArrayAdapter<>(this, R.layout.club_row, R.id.clubName, allClubs);
+		clubAdapter = new CustomClubListAdapter(this, allClubs);//new ArrayAdapter<>(this, R.layout.club_row, R.id.clubName, allClubs);
 		clubsListView.setAdapter(clubAdapter);
 		clubsListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
 		{
@@ -546,24 +547,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		int id = v.getId();
 		if(id == R.id.clubFollow)
 		{
+			if(!cd.isConnectedToInternet())
+			{
+				Toast.makeText(MainActivity.this, R.string.noInternet, Toast.LENGTH_SHORT).show();
+				return;
+			}
 			View parentRow = (View) v.getParent().getParent();
 			final int position = clubsListView.getPositionForView(parentRow);
 			Club c = (Club) clubsListView.getItemAtPosition(position);
 			Button x = (Button) v;
 			if(v.getTag().toString() == "notfollowed")
 			{
-				localDB.execSQL("INSERT INTO followed_clubs (id) VALUES (" + c.clubID + ")");
+				c.followed = true;
+				localDB.execSQL("UPDATE club SET followed=1 WHERE id=" + c.clubID);
+				localDB.execSQL("UPDATE event SET followed=1 WHERE club_id=" + c.clubID);
 				// TODO : change button colours from green (followed) to theme default (unfollowed)
-				//x.setBackgroundColor(getResources().getColor(R.color.green));
-				//x.setTextColor(getResources().getColor(R.color.white));
+				x.setBackgroundResource(R.drawable.followed_button);
+				x.setTextColor(getResources().getColor(R.color.white));
 				x.setText(R.string.followed);
 				v.setTag("followed");
 			}
 			else
 			{
-				localDB.execSQL("DELETE FROM followed_clubs WHERE id=" + c.clubID);
-				//x.setBackgroundResource(android.R.drawable.btn_default);
-				//x.setTextColor();
+				c.followed = false;
+				localDB.execSQL("UPDATE club SET followed=0 WHERE id=" + c.clubID);
+				localDB.execSQL("UPDATE event SET followed=0 WHERE club_id=" + c.clubID);
+				x.setBackgroundResource(R.drawable.not_followed_button);
+				x.setTextColor(getResources().getColor(R.color.black));
 				x.setText(R.string.follow);
 				v.setTag("notfollowed");
 			}
