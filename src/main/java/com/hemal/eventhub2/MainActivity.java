@@ -309,7 +309,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			@Override
 			protected Map<String, String> getParams()
 			{
-				// Posting params to register url
+				// Posting params to sync event url
 				Map<String, String> params = new HashMap<>();
 				params.put("latest_created_on", latestCreatedOn);
 				params.put("email", UserDetails.email);
@@ -317,9 +317,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			}
 		};
 
-		// Adding request to request queue
-		final String REQUEST_TAG = "syncEventsRequest";
-		AppController.getInstance().addToRequestQueue(strReq, REQUEST_TAG);
+		AppController.getInstance().addToRequestQueue(strReq, "syncEventsRequest");
 	}
 
 	private ArrayList<Club> getAllClubs()
@@ -402,7 +400,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				@Override
 				protected Map<String, String> getParams()
 				{
-					// Posting params to register url
+					// Posting params to sync club url
 					Map<String, String> params = new HashMap<>();
 					params.put("newclubsjson", jObj.toString());
 					params.put("email", UserDetails.email);
@@ -410,8 +408,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				}
 			};
 
-			final String REQUEST_TAG = "syncClubsRequest";
-			AppController.getInstance().addToRequestQueue(req, REQUEST_TAG);
+			AppController.getInstance().addToRequestQueue(req, "syncClubsRequest");
 		}
 		catch(JSONException e)
 		{
@@ -547,26 +544,104 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			Button x = (Button) v;
 			if(v.getTag().toString() == "notfollowed")
 			{
-				c.followed = true;
-				localDB.execSQL("UPDATE club SET followed=1 WHERE id=" + c.clubID);
-				localDB.execSQL("UPDATE event SET followed=1 WHERE club_id=" + c.clubID);
-				x.setBackgroundResource(R.drawable.followed_button);
-				x.setTextColor(getResources().getColor(R.color.white));
-				x.setText(R.string.followed);
-				v.setTag("followed");
+//				c.followed = true;
+//				localDB.execSQL("UPDATE club SET followed=1 WHERE id=" + c.clubID);
+//				localDB.execSQL("UPDATE event SET followed=1 WHERE club_id=" + c.clubID);
+//				x.setBackgroundResource(R.drawable.followed_button);
+//				x.setTextColor(getResources().getColor(R.color.white));
+//				x.setText(R.string.followed);
+//				v.setTag("followed");
+				sendClubFollowRequest(c, true, x);
 			}
 			else
 			{
-				c.followed = false;
-				localDB.execSQL("UPDATE club SET followed=0 WHERE id=" + c.clubID);
-				localDB.execSQL("UPDATE event SET followed=0 WHERE club_id=" + c.clubID);
-				x.setBackgroundResource(R.drawable.not_followed_button);
-				x.setTextColor(getResources().getColor(R.color.black));
-				x.setText(R.string.follow);
-				v.setTag("notfollowed");
+//				c.followed = false;
+//				localDB.execSQL("UPDATE club SET followed=0 WHERE id=" + c.clubID);
+//				localDB.execSQL("UPDATE event SET followed=0 WHERE club_id=" + c.clubID);
+//				x.setBackgroundResource(R.drawable.not_followed_button);
+//				x.setTextColor(getResources().getColor(R.color.black));
+//				x.setText(R.string.follow);
+//				v.setTag("notfollowed");
+				sendClubFollowRequest(c, false, x);
 			}
 			myEventsFragment.addEventsToFragment();
 		}
+	}
+
+	private void sendClubFollowRequest(final Club club, final boolean follow, final Button b)
+	{
+		String requestUrl;
+		if(follow)
+		{
+			requestUrl = URL.followClub;
+		}
+		else
+		{
+			requestUrl = URL.unfollowClub;
+		}
+		StringRequest req = new StringRequest(Request.Method.POST, requestUrl,
+				new Response.Listener<String>()
+				{
+					@Override
+					public void onResponse(String response)
+					{
+						try
+						{
+							JSONObject jObj = new JSONObject(response);
+							if(jObj.getInt("success") == 1)
+							{
+								if(follow)
+								{
+									// user was not following, now he should follow
+									club.followed = true;
+									localDB.execSQL("UPDATE club SET followed=1 WHERE id=" + club.clubID);
+									localDB.execSQL("UPDATE event SET followed=1 WHERE club_id=" + club.clubID);
+									b.setBackgroundResource(R.drawable.followed_button);
+									b.setTextColor(getResources().getColor(R.color.white));
+									b.setText(R.string.followed);
+									b.setTag("followed");
+								}
+								else
+								{
+									// user was following, now he should unfollow
+									club.followed = false;
+									localDB.execSQL("UPDATE club SET followed=0 WHERE id=" + club.clubID);
+									localDB.execSQL("UPDATE event SET followed=0 WHERE club_id=" + club.clubID);
+									b.setBackgroundResource(R.drawable.not_followed_button);
+									b.setTextColor(getResources().getColor(R.color.black));
+									b.setText(R.string.follow);
+									b.setTag("notfollowed");
+								}
+								myEventsFragment.addEventsToFragment();
+							}
+						}
+						catch(JSONException e)
+						{
+							Toast.makeText(MainActivity.this, R.string.serverError, Toast.LENGTH_SHORT).show();
+						}
+					}
+				},
+				new Response.ErrorListener()
+				{
+					@Override
+					public void onErrorResponse(VolleyError error)
+					{
+						Toast.makeText(MainActivity.this, R.string.slowInternet, Toast.LENGTH_SHORT).show();
+					}
+				})
+		{
+			@Override
+			protected Map<String, String> getParams()
+			{
+				// Posting params to register url
+				Map<String, String> params = new HashMap<>();
+				params.put("clubid", club.clubID.toString());
+				params.put("email", UserDetails.email);
+				return params;
+			}
+		};
+
+		AppController.getInstance().addToRequestQueue(req, "followClubRequest");
 	}
 
 	public static class MyEventsFragment extends CustomEventsFragment

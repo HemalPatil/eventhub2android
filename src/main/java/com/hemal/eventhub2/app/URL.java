@@ -17,4 +17,7 @@ public class URL
 	public static final String registerFCMToken=baseUrl+"register_fcm/";
 	public static final String syncEvents=baseUrl+"syncevents/";
 	public static final String syncClubs=baseUrl+"syncclubs/";
+	public static final String followClub=baseUrl+"followclub/";
+	public static final String unfollowClub=baseUrl+"unfollowclub/";
+	public static final String followEvent=baseUrl+"followevent/";
 }
