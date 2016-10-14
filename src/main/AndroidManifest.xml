@@ -63,7 +63,7 @@
             android:name=".AboutEventActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AboutActivityTheme.NoActionBar">
         </activity>
     </application>
 

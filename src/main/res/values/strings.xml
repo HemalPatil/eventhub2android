@@ -5,7 +5,7 @@
     <string name="eventString">Events</string>
     <string name="clubString">Clubs</string>
     <string name="aboutClub">About Club</string>
-    <string name="eventDetails">Event Details</string>
+    <string name="eventDescription">Event Description</string>
     <string name="contacts">Contacts</string>
     <string name="broughtBy">Brought to you by : </string>
 

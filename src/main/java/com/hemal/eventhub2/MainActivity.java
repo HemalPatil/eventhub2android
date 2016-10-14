@@ -241,9 +241,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 								eventValues.put("club_id", jsonObject.getInt("club_id"));
 								eventValues.put("created_on", jsonObject.getString("created_on"));
 								eventValues.put("followed", jsonObject.getInt("followed"));
+								eventValues.put("image_downloaded", 0);
+								eventValues.put("description", jsonObject.getString("description"));
 								long newID = localDB.insert("event", null, eventValues);
 								Integer ID = (int)newID;
-								Log.v("eventaddedID", ID.toString());
+								Log.v("eventAddedID", ID.toString());
 							}
 
 							// If received new events from server, ask the fragments to update themselves

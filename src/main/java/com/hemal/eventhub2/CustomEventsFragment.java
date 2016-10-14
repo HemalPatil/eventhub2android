@@ -109,11 +109,9 @@ public abstract class CustomEventsFragment extends Fragment
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
-				// TODO : replace the LoginActivity class with AboutEventActivity
 				Intent intent = new Intent(getActivity(), AboutEventActivity.class);
 				Event e = (Event) parent.getItemAtPosition(position);
-				Log.d("tag", e.getEventName());
-				intent.putExtra("eventid", e.getId());
+				intent.putExtra("eventID", e.getId());
 				startActivity(intent);
 			}
 		});

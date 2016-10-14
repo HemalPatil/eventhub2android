@@ -17,4 +17,5 @@
     <color name="lightGrey">#cccccc</color>
     <color name="green">#00aa00</color>
     <color name="lime">#66bb00</color>
+    <color name="app_blue">#00a2e8</color>
 </resources>

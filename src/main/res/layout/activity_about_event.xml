@@ -41,7 +41,7 @@
                 android:layout_height="wrap_content"
                 android:fitsSystemWindows="true"
                 android:scaleType="centerCrop"
-                android:src="@drawable/hackathon"
+                android:src="@drawable/event"
                 app:layout_collapseMode="parallax"
                 app:layout_collapseParallaxMultiplier="0.5"/>
 
@@ -87,7 +87,7 @@
                     android:src="@mipmap/ic_action_place_red"/>
 
                 <TextView
-                    android:id="@+id/eventLocation"
+                    android:id="@+id/eventVenue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -162,7 +162,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="6dp"
                     android:text="Music Club"
-                    android:textColor="#333333"
+                    android:textColor="@color/app_blue"
                     android:textSize="20dp"/>
 
             </LinearLayout>
@@ -180,13 +180,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:text="@string/eventDetails"
+                    android:text="@string/eventDescription"
                     android:textColor="@color/black"
                     android:textSize="20dp"
                     android:gravity="center"/>
 
                 <TextView
-                    android:id="@+id/eventDetails"
+                    android:id="@+id/eventDescription"
                     android:layout_width="300dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
@@ -243,7 +243,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="20dp"
                         android:text="9701830366"
-                        android:textColor="#333333"/>
+                        android:textColor="@color/app_blue"/>
 
                 </LinearLayout>
 
@@ -277,7 +277,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="20dp"
                         android:text="9701830366"
-                        android:textColor="#333333"/>
+                        android:textColor="@color/app_blue"/>
 
                 </LinearLayout>
 
