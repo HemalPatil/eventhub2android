@@ -15,6 +15,8 @@ import com.hemal.eventhub2.helper.gmailLetter.ColorGenerator;
 import com.hemal.eventhub2.helper.gmailLetter.TextDrawable;
 import com.hemal.eventhub2.model.Event;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 /**
@@ -66,12 +68,21 @@ public class CustomEventListAdapter extends BaseAdapter
 
 		TextView eventName = (TextView) convertView.findViewById(R.id.eventName);
 		TextView eventTime = (TextView) convertView.findViewById(R.id.eventTime);
-		TextView eventDesc = (TextView) convertView.findViewById(R.id.eventVenue);
+		TextView eventVenue = (TextView) convertView.findViewById(R.id.eventVenue);
 		ImageView icon=(ImageView)convertView.findViewById(R.id.imageIcon);
 		Event event = eventItems.get(position);
 		eventName.setText(event.getEventName());
-		eventDesc.setText(event.getEventVenue());
-		eventTime.setText(event.getEventTime());
+		eventVenue.setText(event.getEventVenue());
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat sd1 = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
+		try
+		{
+			eventTime.setText(sd1.format(sdf.parse(event.getEventTime())));
+		}
+		catch (ParseException e)
+		{
+			eventTime.setText(event.getEventTime());
+		}
 
 		ColorGenerator generator = ColorGenerator.MATERIAL; // or use DEFAULT
 		int charColor = generator.getRandomColor(); //get color for charecter

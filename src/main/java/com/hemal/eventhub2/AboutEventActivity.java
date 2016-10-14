@@ -77,7 +77,7 @@ public class AboutEventActivity extends AppCompatActivity
 		eventVenue = c.getString(c.getColumnIndex("venue"));
 		String dateTime = c.getString(c.getColumnIndex("date_time"));
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		SimpleDateFormat sd1 = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat sd1 = new SimpleDateFormat("dd MMM yyyy");
 		SimpleDateFormat sd2 = new SimpleDateFormat("HH:mm:ss");
 		try
 		{
