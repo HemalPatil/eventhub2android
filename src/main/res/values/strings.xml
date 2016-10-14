@@ -5,6 +5,9 @@
     <string name="eventString">Events</string>
     <string name="clubString">Clubs</string>
     <string name="aboutClub">About Club</string>
+    <string name="eventDetails">Event Details</string>
+    <string name="contacts">Contacts</string>
+    <string name="broughtBy">Brought to you by : </string>
 
     <string-array name="eventTabNames">
         <item>MY EVENTS</item>
@@ -47,6 +50,10 @@
     <string name="error_field_required">This field is required</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
+    </string>
+
+    <string name="testString">
+        This is an awesome event. Do attend it! Very informative for 3rd year B.Tech. students.
     </string>
 
 </resources>

@@ -123,48 +123,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 		cd = new ConnectionDetector(getApplicationContext());
 
-		// Create and add the fragments to the Events layout
-		/*myEventsFragment = new CustomEventsFragment(R.layout.myevents_fragment, R.id.myEventsRefreshLayout, R.id.myEventList, R.id.noEventsMy, R.id.myEventsRefreshButton, "my")
-		{
-			@Override
-			protected ArrayList<Event> getEvents()
-			{
-				ArrayList<Event> list = new ArrayList<>();
-				Cursor cr = fragmentDB.rawQuery("SELECT * FROM event WHERE followed=1 ORDER BY event.date_time", null);
-				addEventsFromCursor(cr, list);
-				return list;
-			}
-		};
-		todayFragment = new CustomEventsFragment(R.layout.today_fragment, R.id.todayRefreshLayout, R.id.todayEventList, R.id.noEventsToday, R.id.todayRefreshButton, "today")
-		{
-			@Override
-			protected ArrayList<Event> getEvents()
-			{
-				ArrayList<Event> list = new ArrayList<>();
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-				String currentDate = sdf.format(new Date());
-				String night[]={currentDate +" 00:00:00", currentDate + " 23:59:59"};
-				//Cursor cr = fragmentDB.rawQuery("SELECT * FROM event ORDER BY date_time", null);
-				Cursor cr = fragmentDB.rawQuery("SELECT * FROM event WHERE date_time>'" + night[0] + "' AND date_time<'" + night[1] + "' ORDER BY date_time", null);
-				addEventsFromCursor(cr, list);
-				return list;
-			}
-		};
-		upComingFragment = new CustomEventsFragment(R.layout.upcoming_fragment, R.id.upcomingRefreshLayout, R.id.upcomingEventList, R.id.noEventsUpcoming, R.id.upcomingRefreshButton, "upcoming")
-		{
-			@Override
-			protected ArrayList<Event> getEvents()
-			{
-				ArrayList<Event> list = new ArrayList<>();
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-				String currentDate = sdf.format(new Date());
-				//Cursor cr = fragmentDB.rawQuery("SELECT * FROM event ORDER BY date_time", null);
-				Cursor cr = fragmentDB.rawQuery("SELECT * FROM event WHERE date_time>'" + currentDate + " 23:59:59" + "' ORDER BY date_time", null);
-				addEventsFromCursor(cr, list);
-				return list;
-			}
-		};*/
-
 		Bundle x = new Bundle();
 		x.putInt("fragmentLayout", R.layout.myevents_fragment);
 		x.putInt("refreshLayout", R.id.myEventsRefreshLayout);

@@ -48,16 +48,6 @@ public abstract class CustomEventsFragment extends Fragment
 		super();
 	}
 
-	/*public void setFragmentLayouts(int fragmentID, int refreshLayoutID, int listViewID, int noEventsID, int refreshButtonID, final String FRAGMENT_TAG)
-	{
-		this.fragmentID = fragmentID;
-		this.refreshLayoutID = refreshLayoutID;
-		this.listViewID = listViewID;
-		this.noEventsID = noEventsID;
-		this.refreshButtonID = refreshButtonID;
-		this.FRAGMENT_TAG = FRAGMENT_TAG;
-	}*/
-
 	@Override
 	public void onCreate(Bundle savedInstance)
 	{
@@ -120,7 +110,7 @@ public abstract class CustomEventsFragment extends Fragment
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
 				// TODO : replace the LoginActivity class with AboutEventActivity
-				Intent intent = new Intent(getActivity(), LoginActivity.class);
+				Intent intent = new Intent(getActivity(), AboutEventActivity.class);
 				Event e = (Event) parent.getItemAtPosition(position);
 				Log.d("tag", e.getEventName());
 				intent.putExtra("eventid", e.getId());
