@@ -22,11 +22,9 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
-
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -126,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		cd = new ConnectionDetector(getApplicationContext());
 
 		// Create and add the fragments to the Events layout
-		myEventsFragment = new CustomEventsFragment(R.layout.myevents_fragment, R.id.myEventsRefreshLayout, R.id.myEventList, R.id.noEventsMy, R.id.myEventsRefreshButton, "my")
+		/*myEventsFragment = new CustomEventsFragment(R.layout.myevents_fragment, R.id.myEventsRefreshLayout, R.id.myEventList, R.id.noEventsMy, R.id.myEventsRefreshButton, "my")
 		{
 			@Override
 			protected ArrayList<Event> getEvents()
@@ -165,7 +163,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				addEventsFromCursor(cr, list);
 				return list;
 			}
-		};
+		};*/
+
+		Bundle x = new Bundle();
+		x.putInt("fragmentLayout", R.layout.myevents_fragment);
+		x.putInt("refreshLayout", R.id.myEventsRefreshLayout);
+		x.putInt("listView", R.id.myEventList);
+		x.putInt("noEvents", R.id.noEventsMy);
+		x.putInt("refreshButton", R.id.myEventsRefreshButton);
+		x.putString("tag", "myevents");
+		myEventsFragment = new MyEventsFragment();
+		myEventsFragment.setArguments(x);
+
+		x = new Bundle();
+		x.putInt("fragmentLayout", R.layout.today_fragment);
+		x.putInt("refreshLayout", R.id.todayRefreshLayout);
+		x.putInt("listView", R.id.todayEventList);
+		x.putInt("noEvents", R.id.noEventsToday);
+		x.putInt("refreshButton", R.id.todayRefreshButton);
+		x.putString("tag", "today");
+		todayFragment = new TodayFragment();
+		todayFragment.setArguments(x);
+
+		x = new Bundle();
+		x.putInt("fragmentLayout", R.layout.upcoming_fragment);
+		x.putInt("refreshLayout", R.id.upcomingRefreshLayout);
+		x.putInt("listView", R.id.upcomingEventList);
+		x.putInt("noEvents", R.id.noEventsUpcoming);
+		x.putInt("refreshButton", R.id.upcomingRefreshButton);
+		x.putString("tag", "upcoming");
+		upComingFragment = new UpcomingFragment();
+		upComingFragment.setArguments(x);
+
 		mPager = (ViewPager) findViewById(R.id.eventsPager);
 		mPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
 		mPager.setCurrentItem(1);
@@ -561,7 +590,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				c.followed = true;
 				localDB.execSQL("UPDATE club SET followed=1 WHERE id=" + c.clubID);
 				localDB.execSQL("UPDATE event SET followed=1 WHERE club_id=" + c.clubID);
-				// TODO : change button colours from green (followed) to theme default (unfollowed)
 				x.setBackgroundResource(R.drawable.followed_button);
 				x.setTextColor(getResources().getColor(R.color.white));
 				x.setText(R.string.followed);
@@ -578,6 +606,64 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				v.setTag("notfollowed");
 			}
 			myEventsFragment.addEventsToFragment();
+		}
+	}
+
+	public static class MyEventsFragment extends CustomEventsFragment
+	{
+		public MyEventsFragment()
+		{
+			super();
+		}
+
+		@Override
+		protected ArrayList<Event> getEvents()
+		{
+			ArrayList<Event> list = new ArrayList<>();
+			Cursor cr = fragmentDB.rawQuery("SELECT * FROM event WHERE followed=1 ORDER BY event.date_time", null);
+			addEventsFromCursor(cr, list);
+			return list;
+		}
+	}
+
+	public static class TodayFragment extends CustomEventsFragment
+	{
+		public TodayFragment()
+		{
+			super();
+		}
+
+		@Override
+		protected ArrayList<Event> getEvents()
+		{
+			ArrayList<Event> list = new ArrayList<>();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			String currentDate = sdf.format(new Date());
+			String night[]={currentDate +" 00:00:00", currentDate + " 23:59:59"};
+			//Cursor cr = fragmentDB.rawQuery("SELECT * FROM event ORDER BY date_time", null);
+			Cursor cr = fragmentDB.rawQuery("SELECT * FROM event WHERE date_time>'" + night[0] + "' AND date_time<'" + night[1] + "' ORDER BY date_time", null);
+			addEventsFromCursor(cr, list);
+			return list;
+		}
+	}
+
+	public static class UpcomingFragment extends CustomEventsFragment
+	{
+		public UpcomingFragment()
+		{
+			super();
+		}
+
+		@Override
+		protected ArrayList<Event> getEvents()
+		{
+			ArrayList<Event> list = new ArrayList<>();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			String currentDate = sdf.format(new Date());
+			//Cursor cr = fragmentDB.rawQuery("SELECT * FROM event ORDER BY date_time", null);
+			Cursor cr = fragmentDB.rawQuery("SELECT * FROM event WHERE date_time>'" + currentDate + " 23:59:59" + "' ORDER BY date_time", null);
+			addEventsFromCursor(cr, list);
+			return list;
 		}
 	}
 }

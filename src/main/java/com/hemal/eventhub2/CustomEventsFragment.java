@@ -1,10 +1,10 @@
 package com.hemal.eventhub2;
 
-import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,7 +28,7 @@ import java.util.ArrayList;
  */
 public abstract class CustomEventsFragment extends Fragment
 {
-	private final String FRAGMENT_TAG;
+	private String FRAGMENT_TAG = null;
 	private int refreshLayoutID;
 	private int listViewID;
 	private int noEventsID;
@@ -43,7 +43,12 @@ public abstract class CustomEventsFragment extends Fragment
 	private ConnectionDetector cd;
 	protected SQLiteDatabase fragmentDB;
 
-	public CustomEventsFragment(int fragmentID, int refreshLayoutID, int listViewID, int noEventsID, int refreshButtonID, final String FRAGMENT_TAG)
+	public CustomEventsFragment()
+	{
+		super();
+	}
+
+	/*public void setFragmentLayouts(int fragmentID, int refreshLayoutID, int listViewID, int noEventsID, int refreshButtonID, final String FRAGMENT_TAG)
 	{
 		this.fragmentID = fragmentID;
 		this.refreshLayoutID = refreshLayoutID;
@@ -51,8 +56,23 @@ public abstract class CustomEventsFragment extends Fragment
 		this.noEventsID = noEventsID;
 		this.refreshButtonID = refreshButtonID;
 		this.FRAGMENT_TAG = FRAGMENT_TAG;
+	}*/
+
+	@Override
+	public void onCreate(Bundle savedInstance)
+	{
+		super.onCreate(savedInstance);
+
+		Bundle b = this.getArguments();
+		this.fragmentID = b.getInt("fragmentLayout");
+		this.refreshLayoutID = b.getInt("refreshLayout");
+		this.listViewID = b.getInt("listView");
+		this.noEventsID = b.getInt("noEvents");
+		this.refreshButtonID = b.getInt("refreshButton");
+		this.FRAGMENT_TAG = b.getString("tag");
 	}
 
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance)
 	{
 		View rootView = inflater.inflate(fragmentID, container, false);

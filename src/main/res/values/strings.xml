@@ -4,6 +4,7 @@
 
     <string name="eventString">Events</string>
     <string name="clubString">Clubs</string>
+    <string name="aboutClub">About Club</string>
 
     <string-array name="eventTabNames">
         <item>MY EVENTS</item>

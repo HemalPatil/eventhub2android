@@ -16,4 +16,5 @@
     <color name="darkGrey">#555555</color>
     <color name="lightGrey">#cccccc</color>
     <color name="green">#00aa00</color>
+    <color name="lime">#66bb00</color>
 </resources>
