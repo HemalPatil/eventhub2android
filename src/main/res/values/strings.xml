@@ -25,7 +25,7 @@
 
     <string name="noInternet">No Internet Connection!</string>
     <string name="slowInternet">Can\'t get new events. Network is too slow!</string>
-    <string name="serverError">Server sent an invalid response</string>
+    <string name="sentDataError">Invalid data sent to server</string>
     <string name="refreshing">Getting events</string>
     <string name="noNewEvents">No new events</string>
 

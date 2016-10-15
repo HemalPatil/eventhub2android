@@ -66,6 +66,7 @@
 
             <Button
                 android:id="@+id/eventFollow"
+                android:tag="notfollowed"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"

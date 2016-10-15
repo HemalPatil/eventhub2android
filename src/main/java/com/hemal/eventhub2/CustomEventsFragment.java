@@ -28,6 +28,8 @@ import java.util.ArrayList;
  */
 public abstract class CustomEventsFragment extends Fragment
 {
+	private static final int ABOUT_EVENT_CODE = 0xc0de;
+	private static final int EVENT_FOLLOWED = 0xbeef;
 	private String FRAGMENT_TAG = null;
 	private int refreshLayoutID;
 	private int listViewID;
@@ -112,7 +114,7 @@ public abstract class CustomEventsFragment extends Fragment
 				Intent intent = new Intent(getActivity(), AboutEventActivity.class);
 				Event e = (Event) parent.getItemAtPosition(position);
 				intent.putExtra("eventID", e.getId());
-				startActivity(intent);
+				startActivityForResult(intent, ABOUT_EVENT_CODE);
 			}
 		});
 
@@ -194,6 +196,16 @@ public abstract class CustomEventsFragment extends Fragment
 			{
 				refreshLayout.setRefreshing(false);
 			}
+		}
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+		super.onActivityResult(requestCode, resultCode, data);
+		if(requestCode == ABOUT_EVENT_CODE && resultCode == EVENT_FOLLOWED && data!=null)
+		{
+			((MainActivity)getActivity()).refreshMyEventsFragment();
 		}
 	}
 }

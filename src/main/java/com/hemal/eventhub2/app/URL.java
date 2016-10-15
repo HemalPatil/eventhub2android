@@ -13,11 +13,12 @@ public class URL
 	public static final String geteventusers=baseUrl+"geteventusers/";
 	public static final String getmyevents=baseUrl+"getmyevents/";
 	public static final String geteventfuture=baseUrl+"geteventu/";
-	public static final String registerGoogleSignIn=baseUrl+"register_google/";
-	public static final String registerFCMToken=baseUrl+"register_fcm/";
+	public static final String registerGoogleSignIn=baseUrl+"registergoogle/";
+	public static final String registerFCMToken=baseUrl+"registerfcm/";
 	public static final String syncEvents=baseUrl+"syncevents/";
 	public static final String syncClubs=baseUrl+"syncclubs/";
 	public static final String followClub=baseUrl+"followclub/";
-	public static final String unfollowClub=baseUrl+"unfollowclub/";
 	public static final String followEvent=baseUrl+"followevent/";
+	public static final String unFollowClub=baseUrl+"unfollowclub/";
+	public static final String unFollowEvent=baseUrl+"unfollowevent/";
 }

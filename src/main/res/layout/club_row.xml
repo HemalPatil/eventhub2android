@@ -36,10 +36,10 @@
             android:layout_marginBottom="10dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:onClick="onClick"
             android:focusable="false"
             android:tag="notfollowed"
-            android:background="@drawable/not_followed_button"/>
+            android:background="@drawable/not_followed_button"
+            android:onClick="onClick"/>
 
     </RelativeLayout>
 

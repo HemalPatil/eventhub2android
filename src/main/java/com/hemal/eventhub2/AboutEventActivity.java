@@ -7,18 +7,36 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.hemal.eventhub2.app.AppController;
+import com.hemal.eventhub2.app.URL;
+import com.hemal.eventhub2.app.UserDetails;
 import com.hemal.eventhub2.helper.DatabaseHelper;
+import com.hemal.eventhub2.helper.network.ConnectionDetector;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AboutEventActivity extends AppCompatActivity
 {
+	private final static int EVENT_FOLLOWED = 0xbeef;
+	private final static int EVENT_NOT_FOLLOWED = 0xcafe;
 	private Toolbar toolbar;
 	private CollapsingToolbarLayout collapsingToolbarLayout;
 	private SQLiteDatabase localDB;
@@ -38,6 +56,7 @@ public class AboutEventActivity extends AppCompatActivity
 	private boolean imageDownloaded;
 
 	private Button followButton;
+	private ConnectionDetector cd;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -65,6 +84,8 @@ public class AboutEventActivity extends AppCompatActivity
 
 		DatabaseHelper helper = new DatabaseHelper(this);
 		localDB = helper.getWritableDatabase();
+
+		cd = new ConnectionDetector(this);
 
 		Cursor c = localDB.rawQuery("SELECT event.*, club.name AS club_name FROM event LEFT JOIN club ON event.club_id=club.id WHERE event.id=" + eventID, null);
 		if(!c.moveToFirst())
@@ -107,6 +128,110 @@ public class AboutEventActivity extends AppCompatActivity
 		((TextView)findViewById(R.id.contact1Number)).setText(contactNumber1);
 		((TextView)findViewById(R.id.contact2Name)).setText(contactName2);
 		((TextView)findViewById(R.id.contact2Number)).setText(contactNumber2);
+
+		if(followed)
+		{
+			followButton.setBackgroundResource(R.drawable.followed_button);
+			followButton.setTextColor(getResources().getColor(R.color.white));
+			followButton.setText(R.string.followed);
+			followButton.setTag("followed");
+		}
+		else
+		{
+			followButton.setBackgroundResource(R.drawable.not_followed_button);
+			followButton.setTextColor(getResources().getColor(R.color.black));
+			followButton.setText(R.string.follow);
+			followButton.setTag("notfollowed");
+		}
+		followButton.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				Log.v("eventfollow", "button listener called");
+				if(cd.isConnectedToInternet())
+				{
+					sendEventFollowRequest();
+				}
+				else
+				{
+					Toast.makeText(AboutEventActivity.this, R.string.noInternet, Toast.LENGTH_SHORT).show();
+				}
+			}
+		});
+	}
+
+	private void sendEventFollowRequest()
+	{
+		String requestUrl;
+		if(!followed)
+		{
+			requestUrl = URL.followEvent;
+		}
+		else
+		{
+			requestUrl = URL.unFollowEvent;
+		}
+		StringRequest req = new StringRequest(Request.Method.POST, requestUrl,
+				new Response.Listener<String>()
+				{
+					@Override
+					public void onResponse(String response)
+					{
+						try
+						{
+							JSONObject jObj = new JSONObject(response);
+							if(jObj.getInt("success") == 1)
+							{
+								if(!followed)
+								{
+									// user was not following, now he should follow
+									followed = true;
+									localDB.execSQL("UPDATE event SET followed=1 WHERE id=" + eventID);
+									followButton.setBackgroundResource(R.drawable.followed_button);
+									followButton.setTextColor(getResources().getColor(R.color.white));
+									followButton.setText(R.string.followed);
+									followButton.setTag("followed");
+								}
+								else
+								{
+									// user was following, now he should unfollow
+									followed = false;
+									localDB.execSQL("UPDATE event SET followed=0 WHERE id=" + eventID);
+									followButton.setBackgroundResource(R.drawable.not_followed_button);
+									followButton.setTextColor(getResources().getColor(R.color.black));
+									followButton.setText(R.string.follow);
+									followButton.setTag("notfollowed");
+								}
+							}
+						}
+						catch(JSONException e)
+						{
+							Toast.makeText(AboutEventActivity.this, R.string.sentDataError, Toast.LENGTH_SHORT).show();
+						}
+					}
+				},
+				new Response.ErrorListener()
+				{
+					@Override
+					public void onErrorResponse(VolleyError error)
+					{
+						Toast.makeText(AboutEventActivity.this, R.string.slowInternet, Toast.LENGTH_SHORT).show();
+					}
+				})
+		{
+			@Override
+			protected Map<String, String> getParams()
+			{
+				// Posting params to register url
+				Map<String, String> params = new HashMap<>();
+				params.put("eventid", eventID.toString());
+				params.put("email", UserDetails.email);
+				return params;
+			}
+		};
+
+		AppController.getInstance().addToRequestQueue(req, "followEventRequest");
 	}
 
 	@Override
@@ -117,5 +242,19 @@ public class AboutEventActivity extends AppCompatActivity
 			finish();
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	protected void onStop()
+	{
+		super.onStop();
+		if(followed)
+		{
+			setResult(EVENT_FOLLOWED);
+		}
+		else
+		{
+			setResult(EVENT_NOT_FOLLOWED);
+		}
 	}
 }

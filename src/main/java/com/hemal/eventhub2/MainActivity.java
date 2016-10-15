@@ -195,6 +195,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		new registerFCM().execute();
 	}
 
+	public void refreshMyEventsFragment()
+	{
+		myEventsFragment.addEventsToFragment();
+	}
+
 	public void syncDatabase()
 	{
 		Log.v("syncdb", "syncing database");
@@ -544,24 +549,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			Button x = (Button) v;
 			if(v.getTag().toString() == "notfollowed")
 			{
-//				c.followed = true;
-//				localDB.execSQL("UPDATE club SET followed=1 WHERE id=" + c.clubID);
-//				localDB.execSQL("UPDATE event SET followed=1 WHERE club_id=" + c.clubID);
-//				x.setBackgroundResource(R.drawable.followed_button);
-//				x.setTextColor(getResources().getColor(R.color.white));
-//				x.setText(R.string.followed);
-//				v.setTag("followed");
 				sendClubFollowRequest(c, true, x);
 			}
 			else
 			{
-//				c.followed = false;
-//				localDB.execSQL("UPDATE club SET followed=0 WHERE id=" + c.clubID);
-//				localDB.execSQL("UPDATE event SET followed=0 WHERE club_id=" + c.clubID);
-//				x.setBackgroundResource(R.drawable.not_followed_button);
-//				x.setTextColor(getResources().getColor(R.color.black));
-//				x.setText(R.string.follow);
-//				v.setTag("notfollowed");
 				sendClubFollowRequest(c, false, x);
 			}
 			myEventsFragment.addEventsToFragment();
@@ -577,7 +568,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		}
 		else
 		{
-			requestUrl = URL.unfollowClub;
+			requestUrl = URL.unFollowClub;
 		}
 		StringRequest req = new StringRequest(Request.Method.POST, requestUrl,
 				new Response.Listener<String>()
@@ -617,7 +608,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 						}
 						catch(JSONException e)
 						{
-							Toast.makeText(MainActivity.this, R.string.serverError, Toast.LENGTH_SHORT).show();
+							Toast.makeText(MainActivity.this, R.string.sentDataError, Toast.LENGTH_SHORT).show();
 						}
 					}
 				},
