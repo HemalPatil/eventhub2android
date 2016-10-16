@@ -48,7 +48,7 @@ public final class ServerUtilities
 	private static boolean post(String URL, Map<String, String> params)
 	{
 		long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
-		// As the server might be down, we will retry it MAX_ATTEMPTS number of times
+		// As the server might be down, we will retry it MAX_ATTEMPTS number of times after backoff milliseconds
 		for (int i = 1; i <= MAX_ATTEMPTS; i++)
 		{
 			URL url;
@@ -100,12 +100,13 @@ public final class ServerUtilities
 			{
 				try
 				{
-					Thread.sleep(BACKOFF_MILLI_SECONDS);
+					Thread.sleep(backoff);
 				}
 				catch (InterruptedException ie)
 				{
 					Thread.currentThread().interrupt();
 				}
+				backoff *= 2;
 			}
 			finally
 			{

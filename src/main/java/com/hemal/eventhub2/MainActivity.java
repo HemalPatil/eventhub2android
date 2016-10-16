@@ -30,8 +30,10 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.hemal.eventhub2.adapters.CustomClubListAdapter;
 import com.hemal.eventhub2.app.AppController;
+import com.hemal.eventhub2.app.Topics;
 import com.hemal.eventhub2.app.URL;
 import com.hemal.eventhub2.app.UserDetails;
 import com.hemal.eventhub2.helper.DatabaseHelper;
@@ -53,6 +55,10 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener
 {
+	private final static int ADD_EVENT_CODE = 0xcafe;
+	private final static int ADD_CLUB_CODE = 0xbabe;
+	private final static int CLUB_ADDED = 0xc10b;
+
 	private SQLiteDatabase localDB;
 	private SlidingTabLayout mTabs;
 	private ConnectionDetector cd;
@@ -64,7 +70,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	private CustomEventsFragment myEventsFragment;
 	private CustomEventsFragment todayFragment;
 	private CustomEventsFragment upComingFragment;
-	private FloatingActionButton addEventButton;
+	private FloatingActionButton addEventClubButton;
+	private boolean clubEventFocus;	// true = focused on clubs layout, false = focused on events layout
 	private boolean isAdmin = false;
 
     @Override
@@ -79,9 +86,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		toolbar.setTitle(R.string.eventString);
         setSupportActionBar(toolbar);
 
-		addEventButton = (FloatingActionButton) findViewById(R.id.addEventButton);
-		addEventButton.setVisibility(View.GONE);
-		addEventButton.setOnClickListener(this);
+		addEventClubButton = (FloatingActionButton) findViewById(R.id.addEventClubButton);
+		addEventClubButton.setVisibility(View.GONE);
+		addEventClubButton.setOnClickListener(this);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -125,10 +132,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 		DatabaseHelper DBHelper = new DatabaseHelper(this);
 		localDB = DBHelper.getWritableDatabase();
+		clubEventFocus = false;
 
 		allClubs = getAllClubs();
 
-		cd = new ConnectionDetector(getApplicationContext());
+		cd = new ConnectionDetector(this);
 
 		Bundle x = new Bundle();
 		x.putInt("fragmentLayout", R.layout.myevents_fragment);
@@ -171,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		mTabs.setViewPager(mPager);
 
 		clubsListView = (ListView) findViewById(R.id.clubsList);
-		clubAdapter = new CustomClubListAdapter(this, allClubs);//new ArrayAdapter<>(this, R.layout.club_row, R.id.clubName, allClubs);
+		clubAdapter = new CustomClubListAdapter(this, allClubs);
 		clubsListView.setAdapter(clubAdapter);
 		clubsListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
 		{
@@ -223,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 							isAdmin = jObj.getInt("isadmin") == 1;
 							if(isAdmin)
 							{
-								addEventButton.setVisibility(View.VISIBLE);
+								addEventClubButton.setVisibility(View.VISIBLE);
 							}
 						}
 						catch(JSONException e)
@@ -382,6 +390,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		AppController.getInstance().addToRequestQueue(strReq, "syncEventsRequest");
 	}
 
+	private void refreshClubsList()
+	{
+		allClubs.clear();
+		allClubs.addAll(getAllClubs());
+		clubAdapter.notifyDataSetChanged();
+	}
+
 	private ArrayList<Club> getAllClubs()
 	{
 		ArrayList<Club> list = new ArrayList<>();
@@ -401,6 +416,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		return list;
 	}
 
+	// TODO : add check before adding any club, that club of same name and alias is not already present
 	private void syncClubs(ArrayList<Integer> newClubs)
 	{
 		final JSONObject jObj = new JSONObject();
@@ -520,12 +536,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.nav_events)
 		{
+			clubEventFocus = false;
 			findViewById(R.id.clubLayout).setVisibility(View.GONE);
 			findViewById(R.id.eventLayout).setVisibility(View.VISIBLE);
 			toolbar.setTitle(R.string.eventString);
         }
 		else if (id == R.id.nav_clubs)
 		{
+			clubEventFocus = true;
 			findViewById(R.id.eventLayout).setVisibility(View.GONE);
 			findViewById(R.id.clubLayout).setVisibility(View.VISIBLE);
 			toolbar.setTitle(R.string.clubString);
@@ -613,9 +631,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			}
 			myEventsFragment.addEventsToFragment();
 		}
-		else if(id ==  R.id.addEventButton)
+		else if(id ==  R.id.addEventClubButton)
 		{
-			startActivity(new Intent(this, AddEventActivity.class));
+			if(clubEventFocus)
+			{
+				// focus was on clubs layout
+				startActivity(new Intent(this, AddClubActivity.class));
+			}
+			else
+			{
+				// focus was on events layout
+				startActivity(new Intent(this, AddEventActivity.class));
+			}
 		}
 	}
 
@@ -630,6 +657,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		{
 			requestUrl = URL.unFollowClub;
 		}
+		final String clubFollowTopic = Topics.CLUB_FOLLOW + club.clubID + club.alias;
 		StringRequest req = new StringRequest(Request.Method.POST, requestUrl,
 				new Response.Listener<String>()
 				{
@@ -651,6 +679,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 									b.setTextColor(getResources().getColor(R.color.white));
 									b.setText(R.string.followed);
 									b.setTag("followed");
+									FirebaseMessaging.getInstance().subscribeToTopic(clubFollowTopic);
 								}
 								else
 								{
@@ -662,6 +691,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 									b.setTextColor(getResources().getColor(R.color.black));
 									b.setText(R.string.follow);
 									b.setTag("notfollowed");
+									FirebaseMessaging.getInstance().unsubscribeFromTopic(clubFollowTopic);
 								}
 								myEventsFragment.addEventsToFragment();
 							}
@@ -750,6 +780,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			Cursor cr = fragmentDB.rawQuery("SELECT * FROM event WHERE date_time>'" + currentDate + " 23:59:59" + "' ORDER BY date_time", null);
 			addEventsFromCursor(cr, list);
 			return list;
+		}
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+		super.onActivityResult(requestCode, resultCode, data);
+		if(requestCode == ADD_CLUB_CODE && resultCode == CLUB_ADDED)
+		{
+			refreshClubsList();
 		}
 	}
 }

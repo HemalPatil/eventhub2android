@@ -18,7 +18,9 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.hemal.eventhub2.app.AppController;
+import com.hemal.eventhub2.app.Topics;
 import com.hemal.eventhub2.app.URL;
 import com.hemal.eventhub2.app.UserDetails;
 import com.hemal.eventhub2.helper.DatabaseHelper;
@@ -42,6 +44,7 @@ public class AboutEventActivity extends AppCompatActivity
 	private SQLiteDatabase localDB;
 	private Integer eventID;
 	private String eventName;
+	private String eventAlias;
 	private String eventVenue;
 	private String eventDate;
 	private String eventTime;
@@ -52,6 +55,7 @@ public class AboutEventActivity extends AppCompatActivity
 	private String contactName2;
 	private String contactNumber2;
 	private Date eventDateTime;
+	private String eventFollowTopic;
 	private boolean followed;
 	private boolean imageDownloaded;
 
@@ -93,6 +97,8 @@ public class AboutEventActivity extends AppCompatActivity
 			return;
 		}
 		eventName = c.getString(c.getColumnIndex("name"));
+		eventAlias = c.getString(c.getColumnIndex("alias"));
+		eventFollowTopic = Topics.EVENT_FOLLOW + eventID + eventAlias;
 		followed = c.getInt(c.getColumnIndex("followed")) == 1;
 		imageDownloaded = c.getInt(c.getColumnIndex("image_downloaded")) == 1;
 		eventVenue = c.getString(c.getColumnIndex("venue"));
@@ -192,6 +198,7 @@ public class AboutEventActivity extends AppCompatActivity
 									followButton.setTextColor(getResources().getColor(R.color.white));
 									followButton.setText(R.string.followed);
 									followButton.setTag("followed");
+									FirebaseMessaging.getInstance().subscribeToTopic(eventFollowTopic);
 								}
 								else
 								{
@@ -202,6 +209,7 @@ public class AboutEventActivity extends AppCompatActivity
 									followButton.setTextColor(getResources().getColor(R.color.black));
 									followButton.setText(R.string.follow);
 									followButton.setTag("notfollowed");
+									FirebaseMessaging.getInstance().unsubscribeFromTopic(eventFollowTopic);
 								}
 							}
 						}

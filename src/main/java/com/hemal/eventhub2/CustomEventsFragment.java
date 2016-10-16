@@ -151,7 +151,7 @@ public abstract class CustomEventsFragment extends Fragment
 	{
 		ArrayList<Event> newList = getEvents();
 		eventList.clear();
-		int len = newList.size();
+		/*int len = newList.size();
 		for(int i=0; i<len; i++)
 		{
 			Event e = new Event();
@@ -161,7 +161,8 @@ public abstract class CustomEventsFragment extends Fragment
 			e.setEventTime(newList.get(i).getEventTime());
 			eventList.add(e);
 			Log.v("event" + FRAGMENT_TAG, e.getEventName());
-		}
+		}*/
+		eventList.addAll(newList);
 		adapter.notifyDataSetChanged();
 
 		if(refreshLayout.isRefreshing())
@@ -203,7 +204,7 @@ public abstract class CustomEventsFragment extends Fragment
 	public void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
 		super.onActivityResult(requestCode, resultCode, data);
-		if(requestCode == ABOUT_EVENT_CODE && resultCode == EVENT_FOLLOWED && data!=null)
+		if(requestCode == ABOUT_EVENT_CODE && resultCode == EVENT_FOLLOWED)
 		{
 			((MainActivity)getActivity()).refreshMyEventsFragment();
 		}

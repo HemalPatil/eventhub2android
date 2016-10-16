@@ -152,7 +152,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 		new AlertDialog.Builder(this)
 				.setTitle("Sign-in failed")
 				.setMessage(msg)
-				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setIconAttribute(android.R.attr.alertDialogIcon)
 				.setPositiveButton("OK", null)
 				.show();
 	}

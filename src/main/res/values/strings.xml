@@ -8,6 +8,10 @@
     <string name="eventDescription">Event Description</string>
     <string name="contacts">Contacts</string>
     <string name="broughtBy">Brought to you by : </string>
+    <string name="addEvent">Add Event</string>
+    <string name="addClub">Add Club</string>
+    <string name="name">Name</string>
+    <string name="alias">Alias</string>
 
     <string-array name="eventTabNames">
         <item>MY EVENTS</item>
@@ -22,12 +26,14 @@
     <string name="refresh">Refresh</string>
     <string name="follow">Follow</string>
     <string name="followed">Followed</string>
+    <string name="clubAdded">Club Addeds</string>
 
     <string name="noInternet">No Internet Connection!</string>
     <string name="slowInternet">Can\'t get new events. Network is too slow!</string>
-    <string name="sentDataError">Invalid data sent to server</string>
+    <string name="sentDataError">Invalid data sent to server.</string>
     <string name="refreshing">Getting events</string>
     <string name="noNewEvents">No new events</string>
+    <string name="notAllowed">You are not allowed to do this action.</string>
 
     <!-- Button text -->
     <string name="btn_logout_from_google">Logout from Google</string>

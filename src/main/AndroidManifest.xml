@@ -65,7 +65,17 @@
             android:screenOrientation="portrait"
             android:theme="@style/AboutActivityTheme.NoActionBar">
         </activity>
-        <activity android:name=".AddEventActivity">
+        <activity
+            android:name=".AddEventActivity"
+            android:label="@string/addEvent"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme">
+        </activity>
+        <activity
+            android:name=".AddClubActivity"
+            android:label="@string/addClub"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme">
         </activity>
     </application>
 

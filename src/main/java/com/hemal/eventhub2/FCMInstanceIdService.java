@@ -6,6 +6,8 @@ import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.hemal.eventhub2.app.Topics;
 import com.hemal.eventhub2.app.UserDetails;
 
 /**
@@ -25,6 +27,11 @@ public class FCMInstanceIdService extends FirebaseInstanceIdService
 		prefEditor.putString("fcmtoken", token);
 		prefEditor.commit();
 
-		// TODO : make the user subscribe to all notifications of all events
+		// All users should be subscribed to this topic
+		FirebaseMessaging.getInstance().subscribeToTopic(Topics.ALL_EVENTS);
+
+		// All users must be subscribed to this topic so that if a club is added, the user is notified about it
+		// and we handle the logic of adding it to the local database
+		FirebaseMessaging.getInstance().subscribeToTopic(Topics.ADD_CLUB);
 	}
 }

@@ -22,4 +22,6 @@ public class URL
 	public static final String followEvent=baseUrl+"followevent/";
 	public static final String unFollowClub=baseUrl+"unfollowclub/";
 	public static final String unFollowEvent=baseUrl+"unfollowevent/";
+	public static final String addClub=baseUrl+"addclub/";
+	public static final String addEvent=baseUrl+"addevent/";
 }
