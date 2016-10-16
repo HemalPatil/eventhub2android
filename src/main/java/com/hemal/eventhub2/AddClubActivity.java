@@ -26,12 +26,8 @@ import java.util.Map;
 
 public class AddClubActivity extends AppCompatActivity implements View.OnClickListener
 {
-	private static final int CLUB_ADDED = 0xc10b;
-	private static final int CLUB_NOT_ADDED = 0xc11b;
-
 	private SQLiteDatabase localDB;
 	private ConnectionDetector cd;
-	private boolean added;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -44,8 +40,6 @@ public class AddClubActivity extends AppCompatActivity implements View.OnClickLi
 		DatabaseHelper hp = new DatabaseHelper(this);
 		localDB = hp.getWritableDatabase();
 		cd = new ConnectionDetector(this);
-
-		added = false;
 	}
 
 	@Override
@@ -79,7 +73,7 @@ public class AddClubActivity extends AppCompatActivity implements View.OnClickLi
 									clubValues.put("followed", 0);
 									localDB.insert("club", null, clubValues);
 									Toast.makeText(AddClubActivity.this, R.string.clubAdded, Toast.LENGTH_SHORT).show();
-									added = true;
+									AddClubActivity.this.setResult(RESULT_OK);
 									AddClubActivity.this.finish();
 								}
 								else
@@ -116,20 +110,6 @@ public class AddClubActivity extends AppCompatActivity implements View.OnClickLi
 			};
 
 			AppController.getInstance().addToRequestQueue(req, "addClubRequest");
-		}
-	}
-
-	@Override
-	protected void onStop()
-	{
-		super.onStop();
-		if(added)
-		{
-			setResult(CLUB_ADDED);
-		}
-		else
-		{
-			setResult(CLUB_NOT_ADDED);
 		}
 	}
 }

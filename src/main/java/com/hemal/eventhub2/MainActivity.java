@@ -57,7 +57,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 {
 	private final static int ADD_EVENT_CODE = 0xcafe;
 	private final static int ADD_CLUB_CODE = 0xbabe;
-	private final static int CLUB_ADDED = 0xc10b;
 
 	private SQLiteDatabase localDB;
 	private SlidingTabLayout mTabs;
@@ -636,12 +635,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			if(clubEventFocus)
 			{
 				// focus was on clubs layout
-				startActivity(new Intent(this, AddClubActivity.class));
+				startActivityForResult(new Intent(this, AddClubActivity.class), ADD_CLUB_CODE);
 			}
 			else
 			{
 				// focus was on events layout
-				startActivity(new Intent(this, AddEventActivity.class));
+				startActivityForResult(new Intent(this, AddEventActivity.class), ADD_EVENT_CODE);
 			}
 		}
 	}
@@ -787,7 +786,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
 		super.onActivityResult(requestCode, resultCode, data);
-		if(requestCode == ADD_CLUB_CODE && resultCode == CLUB_ADDED)
+		if(requestCode == ADD_CLUB_CODE && resultCode == RESULT_OK)
 		{
 			refreshClubsList();
 		}

@@ -37,8 +37,6 @@ import java.util.Map;
 
 public class AboutEventActivity extends AppCompatActivity
 {
-	private final static int EVENT_FOLLOWED = 0xbeef;
-	private final static int EVENT_NOT_FOLLOWED = 0xcafe;
 	private Toolbar toolbar;
 	private CollapsingToolbarLayout collapsingToolbarLayout;
 	private SQLiteDatabase localDB;
@@ -57,6 +55,7 @@ public class AboutEventActivity extends AppCompatActivity
 	private Date eventDateTime;
 	private String eventFollowTopic;
 	private boolean followed;
+	private boolean previousFollowed;
 	private boolean imageDownloaded;
 
 	private Button followButton;
@@ -100,6 +99,7 @@ public class AboutEventActivity extends AppCompatActivity
 		eventAlias = c.getString(c.getColumnIndex("alias"));
 		eventFollowTopic = Topics.EVENT_FOLLOW + eventID + eventAlias;
 		followed = c.getInt(c.getColumnIndex("followed")) == 1;
+		previousFollowed = followed;
 		imageDownloaded = c.getInt(c.getColumnIndex("image_downloaded")) == 1;
 		eventVenue = c.getString(c.getColumnIndex("venue"));
 		String dateTime = c.getString(c.getColumnIndex("date_time"));
@@ -211,6 +211,14 @@ public class AboutEventActivity extends AppCompatActivity
 									followButton.setTag("notfollowed");
 									FirebaseMessaging.getInstance().unsubscribeFromTopic(eventFollowTopic);
 								}
+								if(followed != previousFollowed)
+								{
+									setResult(RESULT_OK);
+								}
+								else
+								{
+									setResult(RESULT_CANCELED);
+								}
 							}
 						}
 						catch(JSONException e)
@@ -250,19 +258,5 @@ public class AboutEventActivity extends AppCompatActivity
 			finish();
 		}
 		return super.onOptionsItemSelected(item);
-	}
-
-	@Override
-	protected void onStop()
-	{
-		super.onStop();
-		if(followed)
-		{
-			setResult(EVENT_FOLLOWED);
-		}
-		else
-		{
-			setResult(EVENT_NOT_FOLLOWED);
-		}
 	}
 }

@@ -23,13 +23,14 @@ import com.hemal.eventhub2.model.Event;
 
 import java.util.ArrayList;
 
+import static android.app.Activity.RESULT_OK;
+
 /**
  * Created by Hemal on 12-Oct-16.
  */
 public abstract class CustomEventsFragment extends Fragment
 {
 	private static final int ABOUT_EVENT_CODE = 0xc0de;
-	private static final int EVENT_FOLLOWED = 0xbeef;
 	private String FRAGMENT_TAG = null;
 	private int refreshLayoutID;
 	private int listViewID;
@@ -204,7 +205,7 @@ public abstract class CustomEventsFragment extends Fragment
 	public void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
 		super.onActivityResult(requestCode, resultCode, data);
-		if(requestCode == ABOUT_EVENT_CODE && resultCode == EVENT_FOLLOWED)
+		if(requestCode == ABOUT_EVENT_CODE && resultCode == RESULT_OK)
 		{
 			((MainActivity)getActivity()).refreshMyEventsFragment();
 		}
