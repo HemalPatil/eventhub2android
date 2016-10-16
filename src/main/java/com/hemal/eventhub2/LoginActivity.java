@@ -157,7 +157,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 				.show();
 	}
 
-	// TODO : see if this can be moved to ServerUtilities
 	private class registerGoogle extends AsyncTask<Void, Void, Boolean>
 	{
 		@Override

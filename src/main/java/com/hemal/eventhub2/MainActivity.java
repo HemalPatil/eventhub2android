@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -63,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	private CustomEventsFragment myEventsFragment;
 	private CustomEventsFragment todayFragment;
 	private CustomEventsFragment upComingFragment;
+	private FloatingActionButton addEventButton;
+	private boolean isAdmin = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -75,6 +78,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toolbar = (Toolbar) findViewById(R.id.toolbar);
 		toolbar.setTitle(R.string.eventString);
         setSupportActionBar(toolbar);
+
+		addEventButton = (FloatingActionButton) findViewById(R.id.addEventButton);
+		addEventButton.setVisibility(View.GONE);
+		addEventButton.setOnClickListener(this);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -111,9 +118,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			// User signed-in already
 			UserDetails.email = email;
 			final String fcmToken = preferences.getString("fcmtoken", "default");
-			Log.v("fcmtoken", "Main activity " + fcmToken);
 			UserDetails.fcmToken = fcmToken;
 			Log.v("signin", "Signed in as : " + email);
+			Log.v("fcmtoken", "Main activity " + fcmToken);
 		}
 
 		DatabaseHelper DBHelper = new DatabaseHelper(this);
@@ -187,12 +194,64 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			// the app always has the recent token stored in its shared preferences
 			testAndSetFCMToken();
 			syncDatabase();
+			checkIsAdmin();
 		}
     }
 
 	private void testAndSetFCMToken()
 	{
+		if(UserDetails.fcmToken == "default")
+		{
+			// user's token is not yet added to app's preferences.
+			// most probable cause : network slow, hence token hasn't been received yet
+			return;
+		}
 		new registerFCM().execute();
+	}
+
+	private void checkIsAdmin()
+	{
+		StringRequest req = new StringRequest(Request.Method.POST, URL.isAdmin,
+				new Response.Listener<String>()
+				{
+					@Override
+					public void onResponse(String response)
+					{
+						try
+						{
+							JSONObject jObj = new JSONObject(response);
+							isAdmin = jObj.getInt("isadmin") == 1;
+							if(isAdmin)
+							{
+								addEventButton.setVisibility(View.VISIBLE);
+							}
+						}
+						catch(JSONException e)
+						{
+							e.printStackTrace();
+						}
+					}
+				},
+				new Response.ErrorListener()
+				{
+					@Override
+					public void onErrorResponse(VolleyError error)
+					{
+						Toast.makeText(MainActivity.this, R.string.slowInternet, Toast.LENGTH_SHORT).show();
+					}
+				})
+		{
+			@Override
+			protected Map<String, String> getParams()
+			{
+				// Posting params to is admin url
+				Map<String, String> params = new HashMap<>();
+				params.put("email", UserDetails.email);
+				return params;
+			}
+		};
+
+		AppController.getInstance().addToRequestQueue(req, "checkAdminRequest");
 	}
 
 	public void refreshMyEventsFragment()
@@ -202,7 +261,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 	public void syncDatabase()
 	{
-		Log.v("syncdb", "syncing database");
 		final String latestCreatedOn = getLatestCreatedOnEventTimestamp();
 		final ArrayList<Integer> existingClubs = new ArrayList<>();
 		for(Club c : allClubs)
@@ -221,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 						try
 						{
 							JSONObject jObj = new JSONObject(response);
-							JSONArray jsonArray=jObj.getJSONArray("events");
+							JSONArray jsonArray = jObj.getJSONArray("events");
 							int len = jsonArray.length();
 							for(int i=0;i<len;i++)
 							{
@@ -294,7 +352,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 					@Override
 					public void onErrorResponse(VolleyError error)
 					{
-						Log.v("error", "error response volley");
 						Toast.makeText(MainActivity.this, R.string.slowInternet, Toast.LENGTH_SHORT).show();
 						if(myEventsFragment.isRefreshing())
 						{
@@ -522,7 +579,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		}
 	}
 
-	// TODO : see if this can be moved to ServerUtilities
 	private class registerFCM extends AsyncTask<Void, Void, Boolean>
 	{
 		@Override
@@ -556,6 +612,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				sendClubFollowRequest(c, false, x);
 			}
 			myEventsFragment.addEventsToFragment();
+		}
+		else if(id ==  R.id.addEventButton)
+		{
+			startActivity(new Intent(this, AddEventActivity.class));
 		}
 	}
 

@@ -56,5 +56,6 @@
     <string name="testString">
         This is an awesome event. Do attend it! Very informative for 3rd year B.Tech. students.
     </string>
+    <string name="title_activity_main2">Main2Activity</string>
 
 </resources>

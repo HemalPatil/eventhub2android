@@ -79,7 +79,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:layout_below="@+id/eventFollow"
+                android:layout_below="@id/eventFollow"
                 android:layout_centerHorizontal="true">
 
                 <ImageView
@@ -104,7 +104,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
-                android:layout_below="@+id/locationLayout">
+                android:layout_below="@id/locationLayout">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -143,7 +143,7 @@
                 android:id="@+id/byClubLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/dateTimeLayout"
+                android:layout_below="@id/dateTimeLayout"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
                 android:orientation="horizontal">
@@ -172,7 +172,7 @@
                 android:id="@+id/detailLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/byClubLayout"
+                android:layout_below="@id/byClubLayout"
                 android:layout_marginTop="20dp"
                 android:layout_centerHorizontal="true"
                 android:orientation="vertical">
@@ -201,7 +201,7 @@
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/detailLayout"
+                android:layout_below="@id/detailLayout"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp">
 
@@ -218,7 +218,7 @@
                     android:id="@+id/contact1InfoLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/contactsLabel"
+                    android:layout_below="@id/contactsLabel"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="5dp">
 
@@ -252,7 +252,7 @@
                     android:id="@+id/contact2InfoLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/contact1InfoLayout"
+                    android:layout_below="@id/contact1InfoLayout"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="5dp">
 

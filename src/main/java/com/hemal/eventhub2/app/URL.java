@@ -5,7 +5,7 @@ package com.hemal.eventhub2.app;
  */
 public class URL
 {
-	public static final String baseUrl="http://192.168.0.104/";
+	public static final String baseUrl="http://172.30.102.189/";
 	public static final String todayevents=baseUrl+"geteventd/";
 	public static final String aboutEvent=baseUrl+"getevent/";
 	public static final String iamgoing=baseUrl+"iamgoing/";
@@ -15,6 +15,7 @@ public class URL
 	public static final String geteventfuture=baseUrl+"geteventu/";
 	public static final String registerGoogleSignIn=baseUrl+"registergoogle/";
 	public static final String registerFCMToken=baseUrl+"registerfcm/";
+	public static final String isAdmin=baseUrl+"isadmin/";
 	public static final String syncEvents=baseUrl+"syncevents/";
 	public static final String syncClubs=baseUrl+"syncclubs/";
 	public static final String followClub=baseUrl+"followclub/";

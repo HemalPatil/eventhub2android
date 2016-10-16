@@ -65,6 +65,8 @@
             android:screenOrientation="portrait"
             android:theme="@style/AboutActivityTheme.NoActionBar">
         </activity>
+        <activity android:name=".AddEventActivity">
+        </activity>
     </application>
 
 </manifest>
