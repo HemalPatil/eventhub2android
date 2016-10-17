@@ -71,7 +71,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	private CustomEventsFragment upComingFragment;
 	private FloatingActionButton addEventClubButton;
 	private boolean clubEventFocus;	// true = focused on clubs layout, false = focused on events layout
-	private boolean isAdmin = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -227,8 +226,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 						try
 						{
 							JSONObject jObj = new JSONObject(response);
-							isAdmin = jObj.getInt("isadmin") == 1;
-							if(isAdmin)
+							UserDetails.isAdmin = jObj.getInt("isadmin") == 1;
+							if(UserDetails.isAdmin)
 							{
 								addEventClubButton.setVisibility(View.VISIBLE);
 							}
@@ -668,6 +667,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 							JSONObject jObj = new JSONObject(response);
 							if(jObj.getInt("success") == 1)
 							{
+								Cursor cr = localDB.rawQuery("SELECT * FROM event WHERE club_id=" + club.clubID, null);
+								FirebaseMessaging fcmInstance = FirebaseMessaging.getInstance();
 								if(follow)
 								{
 									// user was not following, now he should follow
@@ -678,7 +679,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 									b.setTextColor(getResources().getColor(R.color.white));
 									b.setText(R.string.followed);
 									b.setTag("followed");
-									FirebaseMessaging.getInstance().subscribeToTopic(clubFollowTopic);
+									fcmInstance.subscribeToTopic(clubFollowTopic);
 								}
 								else
 								{
@@ -690,7 +691,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 									b.setTextColor(getResources().getColor(R.color.black));
 									b.setText(R.string.follow);
 									b.setTag("notfollowed");
-									FirebaseMessaging.getInstance().unsubscribeFromTopic(clubFollowTopic);
+									fcmInstance.unsubscribeFromTopic(clubFollowTopic);
+								}
+								// make the user follow or unfollow from notifications of all events by this club
+								while(cr.moveToNext())
+								{
+									String eventFollowTopic = Topics.EVENT_FOLLOW + cr.getInt(cr.getColumnIndex("id")) + cr.getString(cr.getColumnIndex("alias"));
+									if(follow)
+									{
+										fcmInstance.subscribeToTopic(eventFollowTopic);
+									}
+									else
+									{
+										fcmInstance.unsubscribeFromTopic(eventFollowTopic);
+									}
 								}
 								myEventsFragment.addEventsToFragment();
 							}

@@ -8,4 +8,5 @@ public class UserDetails
 	public static String email = null;
 	public static String name = null;
 	public static String fcmToken = null;
+	public static boolean isAdmin = false;
 }
