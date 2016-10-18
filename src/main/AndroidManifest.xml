@@ -62,8 +62,12 @@
         <activity
             android:name=".AboutEventActivity"
             android:label="@string/app_name"
+            android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AboutActivityTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
         </activity>
         <activity
             android:name=".AddEventActivity"
@@ -76,6 +80,8 @@
             android:label="@string/addClub"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
+        </activity>
+        <activity android:name=".AboutClubActivity">
         </activity>
     </application>
 
