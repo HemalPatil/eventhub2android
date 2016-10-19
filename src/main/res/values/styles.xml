@@ -4,21 +4,23 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="actionBarStyle">@style/AppTheme.ActionBarStyle</item>
-        <item name="actionBarTheme">@style/AppTheme.ActionBarTheme</item>
+        <item name="actionBarStyle">@style/AppTheme.ToolbarStyle</item>
+        <item name="actionBarTheme">@style/AppTheme.ToolbarTheme</item>
     </style>
 
-    <style name="AppTheme.ActionBarStyle">
-        <item name="android:titleTextStyle">@style/AppTheme.ActionBarStyle.TitleTextStyle</item>
+    <style name="AppTheme.ToolbarStyle">
+        <item name="android:titleTextStyle">@style/AppTheme.ToolbarStyle.TitleTextStyle</item>
         <item name="colorControlNormal">@color/white</item>
     </style>
 
-    <style name="AppTheme.ActionBarStyle.TitleTextStyle">
+    <style name="AppTheme.ToolbarStyle.TitleTextStyle">
         <item name="android:textColor">@color/white</item>
     </style>
 
-    <style name="AppTheme.ActionBarTheme">
+    <style name="AppTheme.ToolbarTheme">
         <item name="colorControlNormal">@color/white</item>
+        <item name="colorControlHighlight">@color/colorPrimary</item>
+        <item name="colorControlActivated">@color/black</item>
     </style>
     
 </resources>
