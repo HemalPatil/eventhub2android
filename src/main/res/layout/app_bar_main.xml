@@ -13,9 +13,11 @@
         android:layout_width="match_parent">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+            android:id="@+id/mainActivityToolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize" />
+            android:layout_height="?attr/actionBarSize"
+            app:titleTextColor="@color/white"
+            app:subtitleTextColor="@color/white"/>
 
     </android.support.design.widget.AppBarLayout>
 

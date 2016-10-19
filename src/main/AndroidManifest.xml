@@ -42,11 +42,57 @@
             </intent-filter>
         </service>
 
+        <!--<activity-->
+            <!--android:name=".MainActivity"-->
+            <!--android:label="@string/app_name"-->
+            <!--android:screenOrientation="portrait"-->
+            <!--android:theme="@style/AppTheme.NoActionBar">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN"/>-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER"/>-->
+            <!--</intent-filter>-->
+        <!--</activity>-->
+        <!--<activity-->
+            <!--android:name=".LoginActivity"-->
+            <!--android:label="@string/app_name"-->
+            <!--android:screenOrientation="portrait"-->
+            <!--android:theme="@style/AppTheme">-->
+        <!--</activity>-->
+        <!--<activity-->
+            <!--android:name=".AboutEventActivity"-->
+            <!--android:label="@string/app_name"-->
+            <!--android:parentActivityName=".MainActivity"-->
+            <!--android:screenOrientation="portrait"-->
+            <!--android:theme="@style/AboutActivityTheme.NoActionBar">-->
+            <!--<meta-data-->
+                <!--android:name="android.support.PARENT_ACTIVITY"-->
+                <!--android:value=".MainActivity"/>-->
+        <!--</activity>-->
+        <!--<activity-->
+            <!--android:name=".AddEventActivity"-->
+            <!--android:label="@string/addEvent"-->
+            <!--android:screenOrientation="portrait"-->
+            <!--android:theme="@style/AppTheme">-->
+        <!--</activity>-->
+        <!--<activity-->
+            <!--android:name=".AddClubActivity"-->
+            <!--android:label="@string/addClub"-->
+            <!--android:screenOrientation="portrait"-->
+            <!--android:theme="@style/AppTheme">-->
+        <!--</activity>-->
+        <!--<activity-->
+            <!--android:name=".AboutClubActivity"-->
+            <!--android:label="@string/aboutClub"-->
+            <!--android:screenOrientation="portrait"-->
+            <!--android:theme="@style/AppTheme.NoActionBar">-->
+        <!--</activity>-->
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -64,7 +110,7 @@
             android:label="@string/app_name"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AboutActivityTheme.NoActionBar">
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity"/>
@@ -81,7 +127,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
         </activity>
-        <activity android:name=".AboutClubActivity">
+        <activity
+            android:name=".AboutClubActivity"
+            android:label="@string/aboutClub"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme">
         </activity>
     </application>
 

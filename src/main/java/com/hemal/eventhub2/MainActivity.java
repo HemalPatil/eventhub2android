@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		Log.v("appactivities", "Main activity onCreate called");
 
         setContentView(R.layout.activity_main);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.mainActivityToolbar);
 		toolbar.setTitle(R.string.eventString);
         setSupportActionBar(toolbar);
 
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
             this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+		drawer.setDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -172,8 +172,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		mTabs = (SlidingTabLayout) findViewById(R.id.eventsTabs);
 		mTabs.setDistributeEvenly(true);
 		mTabs.setCustomTabView(R.layout.custom_tab_view, R.id.tabText);
-		mTabs.setSelectedIndicatorColors(getResources().getColor(R.color.colorPrimaryDark));
-		mTabs.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+		mTabs.setSelectedIndicatorColors(getResources().getColor(R.color.colorPrimary));
+		mTabs.setBackgroundColor(getResources().getColor(R.color.white));
 		mTabs.setViewPager(mPager);
 
 		clubsListView = (ListView) findViewById(R.id.clubsList);
@@ -184,8 +184,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
-				// TODO : replace LoginActivity with AboutClubActivity
-				Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+				Intent intent = new Intent(MainActivity.this, AboutClubActivity.class);
 				Club c = (Club) parent.getItemAtPosition(position);
 				intent.putExtra("clubid", c.clubID);
 				startActivity(intent);
@@ -243,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 					@Override
 					public void onErrorResponse(VolleyError error)
 					{
-						Toast.makeText(MainActivity.this, R.string.slowInternet, Toast.LENGTH_SHORT).show();
+
 					}
 				})
 		{

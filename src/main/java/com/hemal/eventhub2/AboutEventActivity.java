@@ -71,7 +71,7 @@ public class AboutEventActivity extends AppCompatActivity
 		toolbar = (Toolbar) findViewById(R.id.eventToolbar);
 
 		collapsingToolbarLayout.setCollapsedTitleTextColor(getResources().getColor(R.color.white));
-		collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.AboutActivityTheme_ActionBarStyle_TitleTextStyle);
+		collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.AppTheme_ActionBarStyle_TitleTextStyle);
 		setSupportActionBar(toolbar);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setDisplayShowHomeEnabled(true);
