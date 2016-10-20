@@ -19,21 +19,27 @@
             android:id="@+id/eventCollapsingBar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
             android:fitsSystemWindows="true"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:contentScrim="@color/colorPrimary"
             app:title="Event">
 
-            <ImageView
-                android:id="@+id/eventImage"
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fitsSystemWindows="true"
-                android:scaleType="centerCrop"
-                android:src="@drawable/event"
-                android:foreground="@drawable/event_toolbar_shadow"
-                app:layout_collapseMode="parallax"
-                app:layout_collapseParallaxMultiplier="0.5"/>
+                android:foreground="@drawable/event_toolbar_shadow">
+
+                <ImageView
+                    android:id="@+id/eventImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fitsSystemWindows="true"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/event"
+                    app:layout_collapseMode="parallax"
+                    app:layout_collapseParallaxMultiplier="0.5"/>
+                
+            </FrameLayout>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/eventToolbar"

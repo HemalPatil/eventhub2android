@@ -8,7 +8,7 @@
         <item name="actionBarTheme">@style/AppTheme.ToolbarTheme</item>
     </style>
 
-    <style name="AppTheme.ToolbarStyle">
+    <style name="AppTheme.ToolbarStyle" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:titleTextStyle">@style/AppTheme.ToolbarStyle.TitleTextStyle</item>
         <item name="colorControlNormal">@color/white</item>
     </style>
@@ -19,8 +19,8 @@
 
     <style name="AppTheme.ToolbarTheme">
         <item name="colorControlNormal">@color/white</item>
-        <item name="colorControlHighlight">@color/colorPrimary</item>
-        <item name="colorControlActivated">@color/black</item>
+        <item name="colorControlHighlight">@color/white</item>
+        <item name="colorControlActivated">@color/white</item>
     </style>
     
 </resources>
