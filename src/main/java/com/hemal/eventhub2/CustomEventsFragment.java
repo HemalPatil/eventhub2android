@@ -6,7 +6,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hemal.eventhub2.adapters.CustomEventListAdapter;
-import com.hemal.eventhub2.helper.DatabaseHelper;
+import com.hemal.eventhub2.app.AppController;
 import com.hemal.eventhub2.helper.network.ConnectionDetector;
 import com.hemal.eventhub2.model.Event;
 
@@ -102,8 +101,7 @@ public abstract class CustomEventsFragment extends Fragment
 			}
 		});
 
-		DatabaseHelper hp = new DatabaseHelper(getActivity());
-		fragmentDB = hp.getReadableDatabase();
+		fragmentDB = AppController.getInstance().getLocalDB();
 
 		addEventsToFragment();
 
@@ -152,17 +150,6 @@ public abstract class CustomEventsFragment extends Fragment
 	{
 		ArrayList<Event> newList = getEvents();
 		eventList.clear();
-		/*int len = newList.size();
-		for(int i=0; i<len; i++)
-		{
-			Event e = new Event();
-			e.setId(newList.get(i).getId());
-			e.setEventName(newList.get(i).getEventName());
-			e.setEventVenue(newList.get(i).getEventVenue());
-			e.setEventTime(newList.get(i).getEventTime());
-			eventList.add(e);
-			Log.v("event" + FRAGMENT_TAG, e.getEventName());
-		}*/
 		eventList.addAll(newList);
 		adapter.notifyDataSetChanged();
 

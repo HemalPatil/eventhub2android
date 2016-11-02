@@ -1,12 +1,15 @@
 package com.hemal.eventhub2.app;
 
 import android.app.Application;
+import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
+import com.hemal.eventhub2.helper.DatabaseHelper;
+import com.hemal.eventhub2.helper.network.ConnectionDetector;
 import com.hemal.eventhub2.util.LruBitmapCache;
 
 /**
@@ -18,6 +21,8 @@ public class AppController extends Application
 
 	private RequestQueue mRequestQueue;
 	private ImageLoader mImageLoader;
+	private SQLiteDatabase localDB;
+	private ConnectionDetector cd;
 
 	private static AppController mInstance;
 
@@ -26,11 +31,24 @@ public class AppController extends Application
 	{
 		super.onCreate();
 		mInstance = this;
+		DatabaseHelper hp = new DatabaseHelper(getApplicationContext());
+		localDB = hp.getWritableDatabase();
+		cd = new ConnectionDetector(this);
 	}
 
 	public static synchronized AppController getInstance()
 	{
 		return mInstance;
+	}
+
+	public synchronized SQLiteDatabase getLocalDB()
+	{
+		return localDB;
+	}
+
+	public synchronized ConnectionDetector getConnectionDetector()
+	{
+		return cd;
 	}
 
 	public RequestQueue getRequestQueue()
@@ -56,12 +74,6 @@ public class AppController extends Application
 	{
 		// set the default tag if tag is empty
 		req.setTag(TextUtils.isEmpty(tag) ? TAG : tag);
-		getRequestQueue().add(req);
-	}
-
-	public <T> void addToRequestQueue(Request<T> req)
-	{
-		req.setTag(TAG);
 		getRequestQueue().add(req);
 	}
 

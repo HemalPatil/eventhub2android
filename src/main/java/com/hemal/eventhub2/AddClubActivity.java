@@ -15,7 +15,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.hemal.eventhub2.app.AppController;
 import com.hemal.eventhub2.app.URL;
 import com.hemal.eventhub2.app.UserDetails;
-import com.hemal.eventhub2.helper.DatabaseHelper;
 import com.hemal.eventhub2.helper.network.ConnectionDetector;
 
 import org.json.JSONException;
@@ -37,8 +36,7 @@ public class AddClubActivity extends AppCompatActivity implements View.OnClickLi
 
 		findViewById(R.id.addClubButton).setOnClickListener(this);
 
-		DatabaseHelper hp = new DatabaseHelper(this);
-		localDB = hp.getWritableDatabase();
+		localDB = AppController.getInstance().getLocalDB();
 		cd = new ConnectionDetector(this);
 	}
 

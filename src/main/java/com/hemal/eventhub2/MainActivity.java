@@ -36,7 +36,6 @@ import com.hemal.eventhub2.app.AppController;
 import com.hemal.eventhub2.app.Topics;
 import com.hemal.eventhub2.app.URL;
 import com.hemal.eventhub2.app.UserDetails;
-import com.hemal.eventhub2.helper.DatabaseHelper;
 import com.hemal.eventhub2.helper.SlidingTabLayout;
 import com.hemal.eventhub2.helper.network.ConnectionDetector;
 import com.hemal.eventhub2.helper.network.ServerUtilities;
@@ -128,13 +127,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			Log.v("fcmtoken", "Main activity " + fcmToken);
 		}
 
-		DatabaseHelper DBHelper = new DatabaseHelper(this);
-		localDB = DBHelper.getWritableDatabase();
+		localDB = AppController.getInstance().getLocalDB();
+		cd = AppController.getInstance().getConnectionDetector();
+
 		clubEventFocus = false;
-
 		allClubs = getAllClubs();
-
-		cd = new ConnectionDetector(this);
 
 		Bundle x = new Bundle();
 		x.putInt("fragmentLayout", R.layout.myevents_fragment);
@@ -186,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			{
 				Intent intent = new Intent(MainActivity.this, AboutClubActivity.class);
 				Club c = (Club) parent.getItemAtPosition(position);
-				intent.putExtra("clubid", c.clubID);
+				intent.putExtra("clubID", c.clubID);
 				startActivity(intent);
 			}
 		});

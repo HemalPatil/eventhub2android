@@ -23,7 +23,6 @@ import com.hemal.eventhub2.app.AppController;
 import com.hemal.eventhub2.app.Topics;
 import com.hemal.eventhub2.app.URL;
 import com.hemal.eventhub2.app.UserDetails;
-import com.hemal.eventhub2.helper.DatabaseHelper;
 import com.hemal.eventhub2.helper.network.ConnectionDetector;
 
 import org.json.JSONException;
@@ -85,8 +84,7 @@ public class AboutEventActivity extends AppCompatActivity
 			return;
 		}
 
-		DatabaseHelper helper = new DatabaseHelper(this);
-		localDB = helper.getWritableDatabase();
+		localDB = AppController.getInstance().getLocalDB();
 
 		cd = new ConnectionDetector(this);
 
